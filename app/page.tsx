@@ -1,6 +1,6 @@
-import { LandingNavbar } from "@/components/landing-navbar";
-import { LandingFooter } from "@/components/landing-footer";
-import { LandingHero } from "@/components/landing-hero";
+import { LandingNavbar } from "@/components/landing/landing-navbar";
+import { LandingFooter } from "@/components/landing/landing-footer";
+import { LandingHero } from "@/components/landing/landing-hero";
 
 export default function Home() {
   return (

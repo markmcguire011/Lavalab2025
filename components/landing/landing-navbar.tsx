@@ -9,7 +9,7 @@ export function LandingNavbar() {
       <div className="w-full max-w-6xl flex justify-between items-center p-3 px-5">
         <div className="flex gap-3 items-center">
           <Image src="/tally_logo_2.svg" alt="Tally Logo" width={40} height={40} />
-          <span className="font-bold text-xl">Tally</span>
+          <span className="font-bold text-xl text-brand-500 dark:text-brand-800">Tally</span>
         </div>
         <div className="flex items-center gap-4">
           <Link href="/auth/login">
