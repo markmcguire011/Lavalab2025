@@ -65,7 +65,7 @@ export function SignUpForm({
           <div className="flex items-center mb-4">
             <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to home
+              Back
             </Link>
           </div>
           <Image src="/tally_logo_2.svg" className="self-center my-4" alt="Tally Logo" width={70} height={70} />
