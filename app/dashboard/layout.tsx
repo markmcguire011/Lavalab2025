@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ProtectedLayout({
@@ -13,13 +13,8 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <SidebarProvider>
-      <AppSidebar user={user} />
-      <SidebarInset>
-        <main className="flex-1 w-full p-6">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <main className="ml-64">
+      {children}
+    </main>
   );
 }

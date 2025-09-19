@@ -23,18 +23,15 @@ export default async function MaterialsPage() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Materials</h1>
-        <Tabs defaultValue="inventory" className="w-auto">
-          <TabsList className="grid w-full grid-cols-2">
+    <div className="flex-1 w-full flex flex-col gap-6 p-5 ">
+      <Tabs defaultValue="inventory" className="w-full">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Materials</h1>
+          <TabsList className="grid w-auto grid-cols-2">
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="order-queue">Order Queue</TabsTrigger>
           </TabsList>
-        </Tabs>
-      </div>
-
-      <Tabs defaultValue="inventory" className="w-full">
+        </div>
         <TabsContent value="inventory" className="space-y-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
