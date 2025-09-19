@@ -12,15 +12,15 @@ interface InventoryAdderProps {
 
 export function InventoryAdder({ currentInventory, neededInventory, unit, onAdd, onSubtract }: InventoryAdderProps) {
   return (
-    <div className="flex items-center rounded-md overflow-hidden bg-white">
+    <div className="flex items-center overflow-hidden bg-white">
       <button 
         onClick={onSubtract}
-        className="h-full p-auto hover:bg-gray-50 transition-colors border-l border-t border-b"
+        className="min-h-full rounded-md hover:bg-gray-50 transition-colors border-l border-t border-b"
       >
         <Minus className="text-gray-600 self-center" />
       </button>
       
-      <div className={`text-center min-w-[80px] h-full border ${
+      <div className={`text-center min-w-[95px] h-full border ${
           neededInventory > currentInventory 
             ? "border-yellow-600" 
             : "text-gray-500"

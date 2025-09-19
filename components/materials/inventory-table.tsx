@@ -12,6 +12,7 @@ export function InventoryTable() {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const supabase = createClient();
 
   useEffect(() => {
@@ -89,6 +90,15 @@ export function InventoryTable() {
     }
   };
 
+  // Filter materials based on search term
+  const filteredMaterials = materials.filter(material =>
+    material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    material.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (material.category && material.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (material.supplier && material.supplier.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (material.sku && material.sku.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -150,6 +160,8 @@ export function InventoryTable() {
             <Input 
               placeholder="Search materials..." 
               className="pl-10 w-80"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <Button variant="outline" size="sm">
@@ -164,16 +176,31 @@ export function InventoryTable() {
       </div>
 
       <div className="space-y-4">
-        {materials.length === 0 ? (
+        {filteredMaterials.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500">No materials found</p>
-            <Button className="mt-4 bg-brand-500 hover:bg-brand-600 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Your First Material
-            </Button>
+            {materials.length === 0 ? (
+              <>
+                <p className="text-gray-500">No materials found</p>
+                <Button className="mt-4 bg-brand-500 hover:bg-brand-600 text-white">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Your First Material
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-500">No materials match your search</p>
+                <Button 
+                  onClick={() => setSearchTerm("")}
+                  variant="outline" 
+                  className="mt-4"
+                >
+                  Clear Search
+                </Button>
+              </>
+            )}
           </div>
         ) : (
-          materials.map((material) => (
+          filteredMaterials.map((material) => (
             <div key={material.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
