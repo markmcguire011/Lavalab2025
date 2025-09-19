@@ -1,17 +1,49 @@
+"use client";
+
 import { Search, Filter, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { InventoryAdder } from "./inventory-adder";
 
 export function InventoryTable() {
+  const materials = [
+    {
+      id: 1,
+      name: "Cotton T-Shirt Blanks",
+      description: "High-quality cotton blanks for screen printing and embroidery",
+      image: "/images/cotton-tshirt.jpg",
+      currentInventory: 250,
+      neededInventory: 300,
+      unit: "PCS"
+    },
+    {
+      id: 2,
+      name: "Vinyl Stickers",
+      description: "Premium adhesive vinyl sheets for cutting and application",
+      image: "/images/vinyl-stickers.jpg",
+      currentInventory: 1200,
+      neededInventory: 500,
+      unit: "SHEETS"
+    },
+    {
+      id: 3,
+      name: "Embroidery Thread",
+      description: "Polyester embroidery thread in various colors",
+      image: "/images/embroidery-thread.jpg",
+      currentInventory: 45,
+      neededInventory: 24,
+      unit: "SPOOLS"
+    }
+  ];
+
+  const handleAdd = (id: number) => {
+    console.log(`Adding to material ${id}`);
+  };
+
+  const handleSubtract = (id: number) => {
+    console.log(`Subtracting from material ${id}`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -34,58 +66,28 @@ export function InventoryTable() {
         </Button>
       </div>
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableCaption>A list of your materials inventory.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Material</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Stock Level</TableHead>
-              <TableHead>Unit Cost</TableHead>
-              <TableHead>Supplier</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">Cotton T-Shirt Blanks</TableCell>
-              <TableCell>Apparel</TableCell>
-              <TableCell>250 units</TableCell>
-              <TableCell>$4.50</TableCell>
-              <TableCell>TextileCorp</TableCell>
-              <TableCell className="text-right">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  In Stock
-                </span>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">Vinyl Stickers</TableCell>
-              <TableCell>Print Media</TableCell>
-              <TableCell>1,200 sheets</TableCell>
-              <TableCell>$0.85</TableCell>
-              <TableCell>PrintSupply Co</TableCell>
-              <TableCell className="text-right">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  In Stock
-                </span>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">Embroidery Thread</TableCell>
-              <TableCell>Notions</TableCell>
-              <TableCell>45 spools</TableCell>
-              <TableCell>$2.25</TableCell>
-              <TableCell>ThreadMaster</TableCell>
-              <TableCell className="text-right">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  Low Stock
-                </span>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+      <div className="space-y-4">
+        {materials.map((material) => (
+          <div key={material.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gray-300 rounded"></div>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900">{material.name}</h3>
+                <p className="text-sm text-gray-500">{material.description}</p>
+              </div>
+            </div>
+            
+            <InventoryAdder
+              currentInventory={material.currentInventory}
+              neededInventory={material.neededInventory}
+              unit={material.unit}
+              onAdd={() => handleAdd(material.id)}
+              onSubtract={() => handleSubtract(material.id)}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <main className="ml-64">
+    <main className="ml-64 bg-gray-50">
       {children}
     </main>
   );
