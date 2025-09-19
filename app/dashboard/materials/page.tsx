@@ -22,7 +22,7 @@ export default async function MaterialsPage() {
             <TabsTrigger value="order-queue">Order Queue</TabsTrigger>
           </TabsList>
         </div>
-        <TabsContent value="inventory" className="bg-white p-3">
+        <TabsContent value="inventory" className="bg-white p-3 rounded-lg">
           <InventoryTable />
         </TabsContent>
         <TabsContent value="order-queue" className="bg-white p-3">

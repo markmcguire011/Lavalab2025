@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Filter, Plus } from "lucide-react";
+import { Plus, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { InventoryAdder } from "./inventory-adder";
+import { MaterialsHeader } from "./materials-header";
 import { createClient } from "@/lib/supabase/client";
 import { Material, transformMaterialFromDb } from "@/lib/types/materials";
 
@@ -13,6 +13,9 @@ export function InventoryTable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [stockFilter, setStockFilter] = useState<string>("all");
+  const [showFilters, setShowFilters] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -90,14 +93,41 @@ export function InventoryTable() {
     }
   };
 
-  // Filter materials based on search term
-  const filteredMaterials = materials.filter(material =>
-    material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    material.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (material.category && material.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (material.supplier && material.supplier.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (material.sku && material.sku.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Handler functions for the header components
+  const handleClearFilters = () => {
+    setCategoryFilter("all");
+    setStockFilter("all");
+  };
+
+  const handleAddNew = () => {
+    console.log("Add new material clicked");
+    // TODO: Implement add new material functionality
+  };
+
+  // Get unique categories for filter dropdown
+  const uniqueCategories = Array.from(new Set(materials.map(m => m.category).filter(Boolean))) as string[];
+
+  // Filter materials based on search term, category, and stock status
+  const filteredMaterials = materials.filter(material => {
+    // Search filter
+    const matchesSearch = !searchTerm || 
+      material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      material.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (material.category && material.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (material.supplier && material.supplier.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (material.sku && material.sku.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    // Category filter
+    const matchesCategory = categoryFilter === "all" || material.category === categoryFilter;
+
+    // Stock filter
+    const matchesStock = stockFilter === "all" || 
+      (stockFilter === "low" && material.currentInventory < material.neededInventory) ||
+      (stockFilter === "sufficient" && material.currentInventory >= material.neededInventory) ||
+      (stockFilter === "zero" && material.currentInventory === 0);
+
+    return matchesSearch && matchesCategory && matchesStock;
+  });
 
   if (loading) {
     return (
@@ -106,11 +136,11 @@ export function InventoryTable() {
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input 
+              {/* <Input 
                 placeholder="Search materials..." 
                 className="pl-10 w-80"
                 disabled
-              />
+              /> */}
             </div>
             <Button variant="outline" size="sm" disabled>
               <Filter className="h-4 w-4 mr-2" />
@@ -153,27 +183,19 @@ export function InventoryTable() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input 
-              placeholder="Search materials..." 
-              className="pl-10 w-80"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
-          </Button>
-        </div>
-        <Button className="bg-brand-500 hover:bg-brand-600 text-white">
-          <Plus className="h-4 w-4 mr-2" />
-          Add New
-        </Button>
-      </div>
+      <MaterialsHeader
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        stockFilter={stockFilter}
+        onStockChange={setStockFilter}
+        categories={uniqueCategories}
+        onClearFilters={handleClearFilters}
+        onAddNew={handleAddNew}
+      />
 
       <div className="space-y-4">
         {filteredMaterials.length === 0 ? (
