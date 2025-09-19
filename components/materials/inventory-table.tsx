@@ -5,8 +5,10 @@ import { Plus, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MaterialsHeader } from "./materials-header";
 import { MaterialRow } from "./material-row";
+import { AddMaterialModal } from "./add-material-modal";
 import { createClient } from "@/lib/supabase/client";
-import { Material, transformMaterialFromDb } from "@/lib/types/materials";
+import { Material, transformMaterialFromDb, transformMaterialForDb } from "@/lib/types/materials";
+import { MaterialFormData } from "./add-material-form";
 import { Input } from "@/components/ui/input";
 
 export function InventoryTable() {
@@ -17,6 +19,7 @@ export function InventoryTable() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -101,8 +104,40 @@ export function InventoryTable() {
   };
 
   const handleAddNew = () => {
-    console.log("Add new material clicked");
-    // TODO: Implement add new material functionality
+    setShowAddModal(true);
+  };
+
+  const handleAddMaterial = async (materialData: MaterialFormData) => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Transform the form data for database insertion
+      const dbMaterial = transformMaterialForDb({
+        ...materialData,
+        neededInventory: 0, // Set to 0 as specified - will be determined by orders
+        status: 'active' as const,
+        userId: user.id
+      });
+
+      const { data, error } = await (supabase as any)
+        .from('materials')
+        .insert([dbMaterial])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Transform back and add to local state
+      const newMaterial = transformMaterialFromDb(data);
+      setMaterials(prev => [...prev, newMaterial]);
+    } catch (err) {
+      console.error('Error adding material:', err);
+      throw err; // Re-throw to let the modal handle the error
+    }
   };
 
   // Get unique categories for filter dropdown
@@ -204,7 +239,10 @@ export function InventoryTable() {
             {materials.length === 0 ? (
               <>
                 <p className="text-gray-500">No materials found</p>
-                <Button className="mt-4 bg-brand-500 hover:bg-brand-600 text-white">
+                <Button 
+                  className="mt-4 bg-brand-500 hover:bg-brand-600 text-white"
+                  onClick={handleAddNew}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Your First Material
                 </Button>
@@ -233,6 +271,12 @@ export function InventoryTable() {
           ))
         )}
       </div>
+
+      <AddMaterialModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSubmit={handleAddMaterial}
+      />
     </div>
   );
 }
