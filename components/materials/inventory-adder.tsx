@@ -12,17 +12,17 @@ interface InventoryAdderProps {
 
 export function InventoryAdder({ currentInventory, neededInventory, unit, onAdd, onSubtract }: InventoryAdderProps) {
   return (
-    <div className="flex items-center overflow-hidden bg-white">
+    <div className="flex bg-white border">
       <button 
         onClick={onSubtract}
-        className="min-h-full rounded-md hover:bg-gray-50 transition-colors border-l border-t border-b"
+        className="hover:bg-gray-50 transition-colors p-2"
       >
         <Minus className="text-gray-600 self-center" />
       </button>
       
-      <div className={`text-center min-w-[95px] h-full border ${
+      <div className={`text-center min-w-[95px] h-full outline outline-1 outline-gray-200 z-10 ${
           neededInventory > currentInventory 
-            ? "border-yellow-600" 
+            ? "outline-yellow-600" 
             : "text-gray-500"
         }`}>
         <div className={`text-lg font-normal text-gray-900 border-b ${
@@ -32,7 +32,7 @@ export function InventoryAdder({ currentInventory, neededInventory, unit, onAdd,
         }`}>
           {currentInventory}
         </div>
-        <div className={`text-xs uppercase h-full ${
+        <div className={`text-xs uppercase h-full bg-gray-100 ${
           neededInventory > currentInventory 
             ? "bg-yellow-600 text-white" 
             : "text-gray-500"
@@ -43,7 +43,7 @@ export function InventoryAdder({ currentInventory, neededInventory, unit, onAdd,
       
       <button 
         onClick={onAdd}
-        className="flex hover:bg-gray-50 transition-colors items-center justify-center p-2"
+        className="hover:bg-gray-50 transition-colors p-2"
       >
         <Plus className="text-gray-600 self-center" />
       </button>
