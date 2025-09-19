@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 
 interface AppSidebarProps {
   user?: {
@@ -95,12 +95,12 @@ export function AppSidebar({ user }: AppSidebarProps) {
   };
 
   return (
-    <Sidebar className="border-r-0">
-      <SidebarHeader className="p-6 pb-4">
-        <div className="flex items-center gap-3">
+    <Sidebar className="border-r-0 bg-white dark:bg-gray-900">
+      <SidebarHeader className="pt-4">
+        <Link href="/dashboard" className="flex items-center gap-3">
           <Image src="/tally_logo_2.svg" alt="Tally Logo" width={32} height={32} />
           <span className="font-normal text-xl text-brand-500 dark:text-brand-400">Tally</span>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent className="">
@@ -131,7 +131,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="h-px bg-gray-200 dark:bg-gray-700 my-4" />
+        <div className="h-px bg-gray-200 dark:bg-gray-700 mx-4 my-2" />
 
         <SidebarGroup>
           <SidebarGroupContent>
