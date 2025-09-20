@@ -17,6 +17,7 @@ export function OrdersTable() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [supplierFilter, setSupplierFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const supabase = createClient();
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export function OrdersTable() {
         .from('orders')
         .select(`
           *,
-          materials!inner(
+          materials(
             id,
             name,
             unit
@@ -40,7 +41,15 @@ export function OrdersTable() {
 
       if (error) throw error;
 
-      const transformedOrders = data?.map(transformOrderFromDb) || [];
+      const transformedOrders = data?.map((orderData: any) => {
+        const materialName = orderData.materials?.name;
+        
+        return transformOrderFromDb({
+          ...orderData,
+          material_name: materialName
+        });
+      }) || [];
+      
       setOrders(transformedOrders);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -68,21 +77,23 @@ export function OrdersTable() {
 
   const handleCancel = async (id: string) => {
     try {
-      const { error } = await (supabase as any)
+      // Delete the order from database
+      const { error } = await supabase
         .from('orders')
-        .update({ status: 'cancelled' })
+        .delete()
         .eq('id', id);
 
       if (error) throw error;
 
-      // Update local state
-      setOrders(prev => prev.map(order => 
-        order.id === id 
-          ? { ...order, status: 'cancelled' as const }
-          : order
-      ));
+      // Remove from local state immediately for optimistic UI update
+      setOrders(prev => prev.filter(order => order.id !== id));
+
+      // Trigger refresh of suggested orders since deleting an order might create new suggestions
+      setRefreshKey(prev => prev + 1);
     } catch (err) {
-      console.error('Error cancelling order:', err);
+      console.error('Error deleting order:', err);
+      // Re-fetch orders to ensure UI is in sync if deletion failed
+      fetchOrders();
     }
   };
 
@@ -209,7 +220,7 @@ export function OrdersTable() {
         )}
       </div>
 
-      <SuggestedOrders onOrderAdded={fetchOrders} />
+      <SuggestedOrders onOrderAdded={fetchOrders} key={refreshKey} />
     </div>
   );
 }

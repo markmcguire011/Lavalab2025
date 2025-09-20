@@ -22,7 +22,7 @@ export function InventoryAdder({ currentInventory, neededInventory, unit, onAdd,
       
       <div className={`text-center min-w-[95px] h-full outline outline-1 outline-gray-200 z-10 ${
           neededInventory > currentInventory 
-            ? "outline-yellow-600" 
+            ? "outline-[#ca8a04]" 
             : "text-gray-500"
         }`}>
         <div className={`text-lg py-0.5 font-normal text-gray-900 border-b ${
