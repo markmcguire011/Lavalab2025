@@ -17,9 +17,8 @@ export interface ProductFormData {
   description?: string;
   category?: string;
   price?: number;
-  stockQuantity?: number;
-  sku?: string;
-  status: 'active' | 'inactive' | 'discontinued';
+  imageUrl?: string;
+  materialId?: string;
 }
 
 export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddProductFormProps) {
@@ -28,9 +27,8 @@ export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddPro
     description: '',
     category: '',
     price: undefined,
-    stockQuantity: undefined,
-    sku: '',
-    status: 'active'
+    imageUrl: '',
+    materialId: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -44,12 +42,11 @@ export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddPro
     // Create clean data object, removing empty optional fields
     const cleanData: ProductFormData = {
       name: formData.name,
-      status: formData.status,
       ...(formData.description && { description: formData.description }),
       ...(formData.category && { category: formData.category }),
       ...(formData.price !== undefined && formData.price > 0 && { price: formData.price }),
-      ...(formData.stockQuantity !== undefined && formData.stockQuantity >= 0 && { stockQuantity: formData.stockQuantity }),
-      ...(formData.sku && { sku: formData.sku })
+      ...(formData.imageUrl && { imageUrl: formData.imageUrl }),
+      ...(formData.materialId && { materialId: formData.materialId })
     };
 
     onSubmit(cleanData);
@@ -103,13 +100,13 @@ export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddPro
         </div>
 
         <div>
-          <Label htmlFor="sku">SKU</Label>
+          <Label htmlFor="imageUrl">Image URL</Label>
           <Input
-            id="sku"
-            type="text"
-            value={formData.sku}
-            onChange={(e) => handleInputChange('sku', e.target.value)}
-            placeholder="Product SKU"
+            id="imageUrl"
+            type="url"
+            value={formData.imageUrl}
+            onChange={(e) => handleInputChange('imageUrl', e.target.value)}
+            placeholder="https://example.com/image.jpg"
             disabled={isLoading}
           />
         </div>
@@ -122,37 +119,31 @@ export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddPro
             min="0"
             step="0.01"
             value={formData.price || ''}
-            onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || undefined)}
+            onChange={(e) => {
+              const value = parseFloat(e.target.value);
+              handleInputChange('price', isNaN(value) ? '' : value);
+            }}
             placeholder="0.00"
             disabled={isLoading}
           />
         </div>
 
-        <div>
-          <Label htmlFor="stockQuantity">Stock Quantity</Label>
-          <Input
-            id="stockQuantity"
-            type="number"
-            min="0"
-            value={formData.stockQuantity || ''}
-            onChange={(e) => handleInputChange('stockQuantity', parseInt(e.target.value) || undefined)}
-            placeholder="0"
-            disabled={isLoading}
-          />
-        </div>
-
         <div className="md:col-span-2">
-          <Label htmlFor="status">Status</Label>
+          <Label htmlFor="materialId">Material</Label>
           <select
-            id="status"
-            value={formData.status}
-            onChange={(e) => handleInputChange('status', e.target.value as 'active' | 'inactive' | 'discontinued')}
+            id="materialId"
+            value={formData.materialId}
+            onChange={(e) => handleInputChange('materialId', e.target.value)}
             disabled={isLoading}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="discontinued">Discontinued</option>
+            <option value="">Select a material (optional)</option>
+            {/* TODO: Load actual materials from database */}
+            <option value="mat-1">Steel Alloy</option>
+            <option value="mat-2">Aluminum</option>
+            <option value="mat-3">Carbon Fiber</option>
+            <option value="mat-4">Plastic Composite</option>
+            <option value="mat-5">Titanium</option>
           </select>
         </div>
       </div>

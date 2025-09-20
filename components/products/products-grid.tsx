@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProductsHeader } from "./products-header";
-import { ProductCard, Product } from "./product-card";
-import { AddProductModal } from "./add-product-modal";
+import { ProductsHeader } from "@/components/products/products-header";
+import { ProductCard } from "@/components/products/product-card";
+import { AddProductModal } from "@/components/products/add-product-modal";
+import { Product } from "@/lib/types/products";
 
 export function ProductsGrid() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -13,7 +14,7 @@ export function ProductsGrid() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [materialFilter, setMaterialFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -33,9 +34,7 @@ export function ProductsGrid() {
           description: "High-quality widget for industrial applications",
           category: "Widgets",
           price: 29.99,
-          status: "active",
-          stockQuantity: 150,
-          sku: "WDG-001",
+          materialName: "Steel Alloy",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -45,9 +44,7 @@ export function ProductsGrid() {
           description: "Reliable gadget for everyday use",
           category: "Gadgets",
           price: 19.99,
-          status: "active",
-          stockQuantity: 85,
-          sku: "GDG-001",
+          materialName: "Aluminum",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -57,9 +54,7 @@ export function ProductsGrid() {
           description: "Professional-grade tool with premium features",
           category: "Tools",
           price: 149.99,
-          status: "active",
-          stockQuantity: 25,
-          sku: "TL-001",
+          materialName: "Carbon Fiber",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -69,9 +64,7 @@ export function ProductsGrid() {
           description: "Space-saving device for small applications",
           category: "Devices",
           price: 79.99,
-          status: "inactive",
-          stockQuantity: 0,
-          sku: "DEV-001",
+          materialName: "Plastic Composite",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -81,9 +74,7 @@ export function ProductsGrid() {
           description: "Heavy-duty component for manufacturing",
           category: "Components",
           price: 199.99,
-          status: "active",
-          stockQuantity: 50,
-          sku: "CMP-001",
+          materialName: "Titanium",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -101,7 +92,7 @@ export function ProductsGrid() {
   // Handler functions
   const handleClearFilters = () => {
     setCategoryFilter("all");
-    setStatusFilter("all");
+    setMaterialFilter("all");
   };
 
   const handleAddNew = () => {
@@ -121,22 +112,22 @@ export function ProductsGrid() {
   // Get unique categories for filter dropdown
   const uniqueCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[];
 
-  // Filter products based on search term, category, and status
+  // Get unique materials for filter dropdown
+  const uniqueMaterials = Array.from(new Set(products.map(p => p.materialName).filter(Boolean))) as string[];
+
+  // Filter products based on search term and category
   const filteredProducts = products.filter(product => {
     // Search filter
     const matchesSearch = !searchTerm || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.category && product.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.sku && product.sku.toLowerCase().includes(searchTerm.toLowerCase()));
+      (product.materialName && product.materialName.toLowerCase().includes(searchTerm.toLowerCase()))
 
     // Category filter
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
+    const matchesMaterial = materialFilter === "all" || product.materialName === materialFilter;
 
-    // Status filter
-    const matchesStatus = statusFilter === "all" || product.status === statusFilter;
-
-    return matchesSearch && matchesCategory && matchesStatus;
+    return matchesSearch && matchesCategory && matchesMaterial;
   });
 
   if (loading) {
@@ -149,9 +140,10 @@ export function ProductsGrid() {
           onToggleFilters={() => {}}
           categoryFilter="all"
           onCategoryChange={() => {}}
-          statusFilter="all"
-          onStatusChange={() => {}}
+          materialFilter="all"
+          onMaterialChange={() => {}}
           categories={[]}
+          materials={[]}
           onClearFilters={() => {}}
           onAddNew={() => {}}
         />
@@ -191,9 +183,10 @@ export function ProductsGrid() {
         onToggleFilters={() => setShowFilters(!showFilters)}
         categoryFilter={categoryFilter}
         onCategoryChange={setCategoryFilter}
-        statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
+        materialFilter={materialFilter}
+        onMaterialChange={setMaterialFilter}
         categories={uniqueCategories}
+        materials={uniqueMaterials}
         onClearFilters={handleClearFilters}
         onAddNew={handleAddNew}
       />
@@ -226,7 +219,7 @@ export function ProductsGrid() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}

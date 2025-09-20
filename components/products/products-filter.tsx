@@ -9,9 +9,10 @@ interface ProductsFilterProps {
   onToggleFilters: () => void;
   categoryFilter: string;
   onCategoryChange: (value: string) => void;
-  statusFilter: string;
-  onStatusChange: (value: string) => void;
+  materialFilter: string;
+  onMaterialChange: (value: string) => void;
   categories: string[];
+  materials: string[];
   onClearFilters: () => void;
 }
 
@@ -20,9 +21,10 @@ export function ProductsFilter({
   onToggleFilters,
   categoryFilter,
   onCategoryChange,
-  statusFilter,
-  onStatusChange,
+  materialFilter,
+  onMaterialChange,
   categories,
+  materials,
   onClearFilters
 }: ProductsFilterProps) {
   const filterRef = useRef<HTMLDivElement>(null);
@@ -40,7 +42,7 @@ export function ProductsFilter({
     }
   }, [showFilters, onToggleFilters]);
 
-  const hasActiveFilters = categoryFilter !== "all" || statusFilter !== "all";
+  const hasActiveFilters = categoryFilter !== "all" || materialFilter !== "all";
 
   return (
     <div className="relative" ref={filterRef}>
@@ -91,17 +93,19 @@ export function ProductsFilter({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
+                Material
               </label>
               <select
-                value={statusFilter}
-                onChange={(e) => onStatusChange(e.target.value)}
+                value={materialFilter}
+                onChange={(e) => onMaterialChange(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="discontinued">Discontinued</option>
+                <option value="all">All Materials</option>
+                {materials.map(material => (
+                  <option key={material} value={material}>
+                    {material}
+                  </option>
+                ))}
               </select>
             </div>
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AddProductForm, ProductFormData } from "./add-product-form";
+import { AddProductForm, ProductFormData } from "@/components/products/add-product-form";
 
 interface AddProductModalProps {
   isOpen: boolean;

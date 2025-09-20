@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProductsSearch } from "./products-search";
-import { ProductsFilter } from "./products-filter";
+import { ProductsSearch } from "@/components/products/products-search";
+import { ProductsFilter } from "@/components/products/products-filter";
 
 interface ProductsHeaderProps {
   searchTerm: string;
@@ -10,9 +10,10 @@ interface ProductsHeaderProps {
   onToggleFilters: () => void;
   categoryFilter: string;
   onCategoryChange: (value: string) => void;
-  statusFilter: string;
-  onStatusChange: (value: string) => void;
+  materialFilter: string;
+  onMaterialChange: (value: string) => void;
   categories: string[];
+  materials: string[];
   onClearFilters: () => void;
   onAddNew?: () => void;
 }
@@ -24,9 +25,10 @@ export function ProductsHeader({
   onToggleFilters,
   categoryFilter,
   onCategoryChange,
-  statusFilter,
-  onStatusChange,
+  materialFilter,
+  onMaterialChange,
   categories,
+  materials,
   onClearFilters,
   onAddNew
 }: ProductsHeaderProps) {
@@ -43,10 +45,11 @@ export function ProductsHeader({
             onToggleFilters={onToggleFilters}
             categoryFilter={categoryFilter}
             onCategoryChange={onCategoryChange}
-            statusFilter={statusFilter}
-            onStatusChange={onStatusChange}
+            materialFilter={materialFilter}
+            onMaterialChange={onMaterialChange}
             categories={categories}
             onClearFilters={onClearFilters}
+            materials={materials}
           />
         </div>
         <Button 
