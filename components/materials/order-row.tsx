@@ -1,4 +1,5 @@
 import { Order, formatOrderDate, getOrderStatusColor, canCancelOrder, canEditOrder } from "@/lib/types/orders";
+import { Pencil, X } from "lucide-react";
 
 interface OrderRowProps {
   order: Order;
@@ -38,7 +39,7 @@ export function OrderRow({ order, onEdit, onCancel }: OrderRowProps) {
               onClick={() => onEdit(order.id)}
               className="text-xs font-medium text-gray-500 hover:text-gray-700 p-4 hover:bg-gray-100 border-r"
             >
-              Edit
+              <Pencil className="text-gray-500 w-4 h-4 self-center" />
             </button>
           )}
           {onCancel && canCancel && (
@@ -46,7 +47,7 @@ export function OrderRow({ order, onEdit, onCancel }: OrderRowProps) {
               onClick={() => onCancel(order.id)}
               className="text-xs font-medium text-red-500 hover:text-red-700 p-4 hover:bg-red-50"
             >
-              Cancel
+              <X className="text-red-500 w-4 h-4 self-center" />
             </button>
           )}
         </div>
