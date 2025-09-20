@@ -1,5 +1,5 @@
 import { Pencil, X } from "lucide-react";
-import { Product, getCategoryColor, formatProductPrice } from "@/lib/types/products";
+import { Product, getCategoryColor, formatProductPrice, getEffectiveImageUrl } from "@/lib/types/products";
 
 interface ProductCardProps {
   product: Product;
@@ -8,14 +8,15 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
+  const effectiveImageUrl = getEffectiveImageUrl(product);
 
   return (
     <div className="flex flex-col bg-white rounded-md max-h-full border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
       {/* Product Image */}
       <div className="aspect-square bg-gray-100 flex items-center justify-center">
-        {product.imageUrl ? (
+        {effectiveImageUrl ? (
           <img
-            src={product.imageUrl}
+            src={effectiveImageUrl}
             alt={product.name}
             className="w-full h-full object-cover"
           />

@@ -39,7 +39,8 @@ export function ProductsGrid() {
             description,
             unit,
             category,
-            supplier
+            supplier,
+            image_url
           )
         `)
         .order('created_at', { ascending: false });
@@ -49,7 +50,8 @@ export function ProductsGrid() {
       const transformedProducts = data?.map((productData: any) => {
         return transformProductFromDb({
           ...productData,
-          material_name: productData.materials?.name
+          material_name: productData.materials?.name,
+          material_image_url: productData.materials?.image_url
         });
       }) || [];
       
@@ -97,7 +99,8 @@ export function ProductsGrid() {
             description,
             unit,
             category,
-            supplier
+            supplier,
+            image_url
           )
         `)
         .single();
@@ -107,7 +110,8 @@ export function ProductsGrid() {
       // Transform back and add to local state
       const newProduct = transformProductFromDb({
         ...data,
-        material_name: data.materials?.name
+        material_name: data.materials?.name,
+        material_image_url: data.materials?.image_url
       });
       
       setProducts(prev => [newProduct, ...prev]);
@@ -145,7 +149,8 @@ export function ProductsGrid() {
             description,
             unit,
             category,
-            supplier
+            supplier,
+            image_url
           )
         `)
         .single();
@@ -155,7 +160,8 @@ export function ProductsGrid() {
       // Transform back and update local state
       const updatedProduct = transformProductFromDb({
         ...data,
-        material_name: data.materials?.name
+        material_name: data.materials?.name,
+        material_image_url: data.materials?.image_url
       });
       
       setProducts(prev => prev.map(p => p.id === editingProduct.id ? updatedProduct : p));
