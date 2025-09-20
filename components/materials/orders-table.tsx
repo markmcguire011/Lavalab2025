@@ -1,54 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OrdersHeader } from "./orders-header";
 import { OrderRow } from "./order-row";
-
-interface Order {
-  id: string;
-  material: string;
-  quantity: string;
-  supplier: string;
-  expectedDelivery: string;
-  status: 'ordered' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-}
-
-// Mock data - replace with actual data fetching
-const mockOrders: Order[] = [
-  {
-    id: "MO-001",
-    material: "Cotton T-Shirt Blanks",
-    quantity: "500 units",
-    supplier: "TextileCorp",
-    expectedDelivery: "Jan 25, 2025",
-    status: "ordered"
-  },
-  {
-    id: "MO-002",
-    material: "Vinyl Stickers",
-    quantity: "2,000 sheets",
-    supplier: "PrintSupply Co",
-    expectedDelivery: "Jan 28, 2025",
-    status: "processing"
-  },
-  {
-    id: "MO-003",
-    material: "Heat Transfer Vinyl",
-    quantity: "100 rolls",
-    supplier: "VinylWorld",
-    expectedDelivery: "Feb 2, 2025",
-    status: "shipped"
-  }
-];
+import { createClient } from "@/lib/supabase/client";
+import { Order, transformOrderFromDb, formatOrderDate } from "@/lib/types/orders";
+import { transformMaterialFromDb } from "@/lib/types/materials";
 
 export function OrdersTable() {
-  const [orders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [supplierFilter, setSupplierFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const supabase = createClient();
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('status', 'pending')
+        .order('order_number');
+
+      if (error) throw error;
+
+      const transformedOrders = data?.map(transformOrderFromDb) || [];
+      setOrders(transformedOrders);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error fetching orders:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handler functions
   const handleClearFilters = () => {
@@ -66,9 +60,24 @@ export function OrdersTable() {
     // TODO: Implement edit order functionality
   };
 
-  const handleCancel = (id: string) => {
-    console.log("Cancel order:", id);
-    // TODO: Implement cancel order functionality
+  const handleCancel = async (id: string) => {
+    try {
+      const { error } = await (supabase as any)
+        .from('orders')
+        .update({ status: 'cancelled' })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Update local state
+      setOrders(prev => prev.map(order => 
+        order.id === id 
+          ? { ...order, status: 'cancelled' as const }
+          : order
+      ));
+    } catch (err) {
+      console.error('Error cancelling order:', err);
+    }
   };
 
   // Get unique suppliers for filter dropdown
@@ -78,10 +87,10 @@ export function OrdersTable() {
   const filteredOrders = orders.filter(order => {
     // Search filter
     const matchesSearch = !searchTerm || 
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.material.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.quantity.toLowerCase().includes(searchTerm.toLowerCase());
+      order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.materialName && order.materialName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.supplier && order.supplier.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.supplierOrderId && order.supplierOrderId.toLowerCase().includes(searchTerm.toLowerCase()));
 
     // Status filter
     const matchesStatus = statusFilter === "all" || order.status === statusFilter;
@@ -91,6 +100,51 @@ export function OrdersTable() {
 
     return matchesSearch && matchesStatus && matchesSupplier;
   });
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <OrdersHeader
+          searchTerm=""
+          onSearchChange={() => {}}
+          showFilters={false}
+          onToggleFilters={() => {}}
+          statusFilter="all"
+          onStatusChange={() => {}}
+          supplierFilter="all"
+          onSupplierChange={() => {}}
+          suppliers={[]}
+          onClearFilters={() => {}}
+          onAddNew={() => {}}
+        />
+        <div className="space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex items-center justify-between p-4 border rounded-lg bg-white">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-32 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded animate-pulse w-48"></div>
+                </div>
+              </div>
+              <div className="w-20 h-6 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600">Error loading orders: {error}</p>
+        <Button onClick={fetchOrders} className="mt-4">
+          Try Again
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

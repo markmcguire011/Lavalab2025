@@ -167,7 +167,7 @@ export function InventoryTable() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 px-4 pt-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="relative">
