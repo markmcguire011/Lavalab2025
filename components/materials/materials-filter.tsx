@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -22,10 +23,24 @@ export function MaterialsFilter({
   categories,
   onClearFilters
 }: MaterialsFilterProps) {
+  const filterRef = useRef<HTMLDivElement>(null);
   const hasActiveFilters = categoryFilter !== "all" || stockFilter !== "all";
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        onToggleFilters();
+      }
+    }
+
+    if (showFilters) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showFilters, onToggleFilters]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={filterRef}>
       <Button 
         variant="outline" 
         size="sm"
@@ -35,7 +50,7 @@ export function MaterialsFilter({
         <Filter className="h-4 w-4 mr-2" />
         Filter
         {hasActiveFilters && (
-          <span className="ml-1 bg-blue-500 text-white text-xs rounded-full px-1.5 py-0.5">
+          <span className="ml-1 bg-blue-500 text-white text-xs rounded-full px-1.5 py-0.4">
             {(categoryFilter !== "all" ? 1 : 0) + (stockFilter !== "all" ? 1 : 0)}
           </span>
         )}

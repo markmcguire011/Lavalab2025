@@ -167,7 +167,7 @@ export function InventoryTable() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -218,7 +218,7 @@ export function InventoryTable() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <MaterialsHeader
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}

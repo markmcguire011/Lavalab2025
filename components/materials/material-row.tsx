@@ -9,7 +9,7 @@ interface MaterialRowProps {
 
 export function MaterialRow({ material, onAdd, onSubtract }: MaterialRowProps) {
   return (
-    <div className="flex items-center justify-between p-4 rounded-lg bg-white hover:shadow-sm transition-shadow">
+    <div className="flex items-center justify-between p-4 rounded-lg bg-white">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
           {material.image_url ? (
