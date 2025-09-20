@@ -148,6 +148,44 @@ export type Database = {
           updated_at?: string | null;
         };
       };
+      fulfillments: {
+        Row: {
+          id: string;
+          user_id: string;
+          fulfillment_id: string;
+          product_id: string;
+          quantity: number;
+          customer_email: string;
+          notes: string | null;
+          status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          fulfillment_id: string;
+          product_id: string;
+          quantity: number;
+          customer_email: string;
+          notes?: string | null;
+          status?: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          fulfillment_id?: string;
+          product_id?: string;
+          quantity?: number;
+          customer_email?: string;
+          notes?: string | null;
+          status?: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -176,3 +214,7 @@ export type OrderUpdate = Database['public']['Tables']['orders']['Update'];
 export type Product = Database['public']['Tables']['products']['Row'];
 export type ProductInsert = Database['public']['Tables']['products']['Insert'];
 export type ProductUpdate = Database['public']['Tables']['products']['Update'];
+
+export type Fulfillment = Database['public']['Tables']['fulfillments']['Row'];
+export type FulfillmentInsert = Database['public']['Tables']['fulfillments']['Insert'];
+export type FulfillmentUpdate = Database['public']['Tables']['fulfillments']['Update'];
