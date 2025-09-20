@@ -57,6 +57,59 @@ export type Database = {
           updated_at?: string;
         };
       };
+      orders: {
+        Row: {
+          id: string;
+          user_id: string;
+          material_id: string;
+          order_number: string;
+          quantity: number;
+          unit_price: number | null;
+          total_amount: number | null;
+          supplier: string | null;
+          supplier_order_id: string | null;
+          expected_delivery_date: string | null;
+          actual_delivery_date: string | null;
+          status: 'ordered' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          material_id: string;
+          order_number?: string;
+          quantity: number;
+          unit_price?: number | null;
+          total_amount?: number | null;
+          supplier?: string | null;
+          supplier_order_id?: string | null;
+          expected_delivery_date?: string | null;
+          actual_delivery_date?: string | null;
+          status?: 'ordered' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          material_id?: string;
+          order_number?: string;
+          quantity?: number;
+          unit_price?: number | null;
+          total_amount?: number | null;
+          supplier?: string | null;
+          supplier_order_id?: string | null;
+          expected_delivery_date?: string | null;
+          actual_delivery_date?: string | null;
+          status?: 'ordered' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -77,3 +130,7 @@ export type Database = {
 export type Material = Database['public']['Tables']['materials']['Row'];
 export type MaterialInsert = Database['public']['Tables']['materials']['Insert'];
 export type MaterialUpdate = Database['public']['Tables']['materials']['Update'];
+
+export type Order = Database['public']['Tables']['orders']['Row'];
+export type OrderInsert = Database['public']['Tables']['orders']['Insert'];
+export type OrderUpdate = Database['public']['Tables']['orders']['Update'];
