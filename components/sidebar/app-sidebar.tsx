@@ -99,7 +99,7 @@ export function AppSidebar({ isCollapsed = false, onToggleCollapse }: AppSidebar
                   href={item.href}
                   className={`flex items-center gap-3 rounded-lg text-sm font-normal transition-colors ${
                     collapsed 
-                      ? "p-3 justify-center" 
+                      ? "p-2 justify-center" 
                       : "px-3 py-2"
                   } ${
                     isActive
