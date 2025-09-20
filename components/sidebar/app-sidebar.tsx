@@ -30,6 +30,11 @@ const sidebarItems: SidebarItem[] = [
     name: "Fulfillment",
     href: "/dashboard/fulfillment", 
     icon: "/icons/fulfillment.svg"
+  },
+  {
+    name: "Integrations",
+    href: "/dashboard/integrations", 
+    icon: "/icons/integrations.svg"
   }
 ];
 
@@ -81,11 +86,15 @@ export function AppSidebar({ isCollapsed = false, onToggleCollapse }: AppSidebar
       {/* Navigation */}
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
-          {sidebarItems.map((item) => {
+          {sidebarItems.map((item, index) => {
             const isActive = pathname === item.href;
+            const isLastItem = index === sidebarItems.length - 1;
             
             return (
               <li key={item.name}>
+                {isLastItem && (
+                  <div className="border-t border-gray-200 my-4"></div>
+                )}
                 <Link
                   href={item.href}
                   className={`flex items-center gap-3 rounded-lg text-sm font-normal transition-colors ${
