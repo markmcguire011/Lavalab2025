@@ -6,6 +6,7 @@ export interface Order {
   orderNumber: string;
   materialId: string;
   materialName?: string; // Populated from join with materials table
+  materialImageUrl?: string; // Populated from join with materials table
   quantity: number;
   unitPrice?: number;
   totalAmount?: number;
@@ -32,12 +33,13 @@ export interface OrderWithMaterial extends Order {
 }
 
 // Transform database row to client interface
-export function transformOrderFromDb(dbOrder: DatabaseOrder & { material_name?: string }): Order {
+export function transformOrderFromDb(dbOrder: DatabaseOrder & { material_name?: string; material_image_url?: string }): Order {
   return {
     id: dbOrder.id,
     orderNumber: dbOrder.order_number,
     materialId: dbOrder.material_id,
     materialName: dbOrder.material_name,
+    materialImageUrl: dbOrder.material_image_url,
     quantity: dbOrder.quantity,
     unitPrice: dbOrder.unit_price || undefined,
     totalAmount: dbOrder.total_amount || undefined,
@@ -65,7 +67,8 @@ export function transformOrderWithMaterialFromDb(dbOrder: DatabaseOrder & {
 }): OrderWithMaterial {
   const baseOrder = transformOrderFromDb({
     ...dbOrder,
-    material_name: dbOrder.materials?.name
+    material_name: dbOrder.materials?.name,
+    material_image_url: dbOrder.materials?.image_url
   });
 
   return {

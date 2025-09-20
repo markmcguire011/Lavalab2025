@@ -10,6 +10,7 @@ export interface Product {
   imageUrl?: string;
   materialId?: string;
   materialName?: string; // Populated from join with materials table
+  materialImageUrl?: string; // Populated from join with materials table
   createdAt: string;
   updatedAt: string;
 }
@@ -27,7 +28,7 @@ export interface ProductWithMaterial extends Product {
 }
 
 // Transform database row to client interface
-export function transformProductFromDb(dbProduct: DatabaseProduct & { material_name?: string }): Product {
+export function transformProductFromDb(dbProduct: DatabaseProduct & { material_name?: string; material_image_url?: string }): Product {
   return {
     id: dbProduct.id,
     name: dbProduct.name,
@@ -37,6 +38,7 @@ export function transformProductFromDb(dbProduct: DatabaseProduct & { material_n
     imageUrl: dbProduct.image_url || undefined,
     materialId: dbProduct.material_id || undefined,
     materialName: dbProduct.material_name,
+    materialImageUrl: dbProduct.material_image_url,
     createdAt: dbProduct.created_at || new Date().toISOString(),
     updatedAt: dbProduct.updated_at || new Date().toISOString()
   };
@@ -83,6 +85,11 @@ export function formatProductPrice(price?: number): string {
     style: 'currency',
     currency: 'USD'
   }).format(price);
+}
+
+// Helper function to get effective image URL (product image or fallback to material image)
+export function getEffectiveImageUrl(product: Product): string | undefined {
+  return product.imageUrl || product.materialImageUrl;
 }
 
 // Helper function to get category color for UI

@@ -1,7 +1,7 @@
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { createClient } from "@/lib/supabase/server";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 
-export default async function ProtectedLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -12,8 +12,11 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <main className="ml-64">
-      {children}
-    </main>
+    <>
+      <AppSidebar />
+      <main className="ml-64">
+        {children}
+      </main>
+    </>
   );
 }

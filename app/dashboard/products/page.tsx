@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
 import { ProductsGrid } from "@/components/products/products-grid";
 
