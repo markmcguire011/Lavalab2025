@@ -10,7 +10,7 @@ interface ProductCardProps {
 export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
 
   return (
-    <div className="bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+    <div className="flex flex-col bg-white rounded-md max-h-full border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
       {/* Product Image */}
       <div className="aspect-square bg-gray-100 flex items-center justify-center">
         {product.imageUrl ? (
@@ -29,7 +29,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
       </div>
 
       {/* Product Info */}
-      <div className="flex flex-col p-4">
+      <div className="flex flex-col p-4 h-full">
         <div className="flex justify-between items-start mb-2">
           <div className="flex-1">
             <h3 className="font-medium text-gray-900 truncate">{product.name}</h3>
@@ -37,7 +37,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
         </div>
 
         {product.description && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2 min-h-10">{product.description}</p>
         )}
 
         <div className="space-y-2 mb-4">
@@ -62,7 +62,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
             </div>
           )}
         </div>
-
+        <div className="grow" />
         {/* Action Buttons */}
         <div className="flex border rounded w-min self-end">
           {onEdit && (

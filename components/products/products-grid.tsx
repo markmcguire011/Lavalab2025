@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ProductsHeader } from "@/components/products/products-header";
 import { ProductCard } from "@/components/products/product-card";
 import { AddProductModal } from "@/components/products/add-product-modal";
-import { Product } from "@/lib/types/products";
+import { Product, transformProductFromDb, transformProductForDb } from "@/lib/types/products";
+import { createClient } from "@/lib/supabase/client";
+import { ProductFormData } from "./add-product-form";
 
 export function ProductsGrid() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,6 +19,7 @@ export function ProductsGrid() {
   const [materialFilter, setMaterialFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const supabase = createClient();
 
   useEffect(() => {
     fetchProducts();
@@ -25,62 +28,31 @@ export function ProductsGrid() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call when products table is implemented
-      // For now, using mock data
-      const mockProducts: Product[] = [
-        {
-          id: "1",
-          name: "Premium Widget",
-          description: "High-quality widget for industrial applications",
-          category: "Widgets",
-          price: 29.99,
-          materialName: "Steel Alloy",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "2",
-          name: "Standard Gadget",
-          description: "Reliable gadget for everyday use",
-          category: "Gadgets",
-          price: 19.99,
-          materialName: "Aluminum",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "3",
-          name: "Luxury Tool",
-          description: "Professional-grade tool with premium features",
-          category: "Tools",
-          price: 149.99,
-          materialName: "Carbon Fiber",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "4",
-          name: "Compact Device",
-          description: "Space-saving device for small applications",
-          category: "Devices",
-          price: 79.99,
-          materialName: "Plastic Composite",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: "5",
-          name: "Industrial Component",
-          description: "Heavy-duty component for manufacturing",
-          category: "Components",
-          price: 199.99,
-          materialName: "Titanium",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ];
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          materials(
+            id,
+            name,
+            description,
+            unit,
+            category,
+            supplier
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const transformedProducts = data?.map((productData: any) => {
+        return transformProductFromDb({
+          ...productData,
+          material_name: productData.materials?.name
+        });
+      }) || [];
       
-      setProducts(mockProducts);
+      setProducts(transformedProducts);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Error fetching products:', err);
@@ -99,14 +71,72 @@ export function ProductsGrid() {
     setShowAddModal(true);
   };
 
+  const handleAddProduct = async (productData: ProductFormData) => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Transform the form data for database insertion
+      const dbProduct = transformProductForDb({
+        ...productData,
+        userId: user.id
+      });
+
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .insert([dbProduct])
+        .select(`
+          *,
+          materials(
+            id,
+            name,
+            description,
+            unit,
+            category,
+            supplier
+          )
+        `)
+        .single();
+
+      if (error) throw error;
+
+      // Transform back and add to local state
+      const newProduct = transformProductFromDb({
+        ...data,
+        material_name: data.materials?.name
+      });
+      
+      setProducts(prev => [newProduct, ...prev]);
+    } catch (err) {
+      console.error('Error creating product:', err);
+      throw err; // Re-throw to let the modal handle the error
+    }
+  };
+
   const handleEdit = (id: string) => {
     console.log("Edit product:", id);
     // TODO: Implement edit product functionality
   };
 
-  const handleDelete = (id: string) => {
-    console.log("Delete product:", id);
-    // TODO: Implement delete product functionality
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Remove from local state immediately for optimistic UI update
+      setProducts(prev => prev.filter(product => product.id !== id));
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      // Re-fetch products to ensure UI is in sync if deletion failed
+      fetchProducts();
+    }
   };
 
   // Get unique categories for filter dropdown
@@ -235,11 +265,7 @@ export function ProductsGrid() {
       <AddProductModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onSubmit={async (productData) => {
-          // TODO: Implement product creation
-          console.log("Create product:", productData);
-          setShowAddModal(false);
-        }}
+        onSubmit={handleAddProduct}
       />
     </div>
   );

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { createClient } from "@/lib/supabase/client";
+import { Material, transformMaterialFromDb } from "@/lib/types/materials";
 
 interface AddProductFormProps {
   onSubmit: (productData: ProductFormData) => void;
@@ -22,6 +24,8 @@ export interface ProductFormData {
 }
 
 export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddProductFormProps) {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
@@ -30,6 +34,30 @@ export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddPro
     imageUrl: '',
     materialId: ''
   });
+  const supabase = createClient();
+
+  useEffect(() => {
+    fetchMaterials();
+  }, []);
+
+  const fetchMaterials = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('materials')
+        .select('*')
+        .eq('status', 'active')
+        .order('name');
+
+      if (error) throw error;
+
+      const transformedMaterials = data?.map(transformMaterialFromDb) || [];
+      setMaterials(transformedMaterials);
+    } catch (err) {
+      console.error('Error fetching materials:', err);
+    } finally {
+      setLoadingMaterials(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,21 +158,24 @@ export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddPro
 
         <div className="md:col-span-2">
           <Label htmlFor="materialId">Material</Label>
-          <select
-            id="materialId"
-            value={formData.materialId}
-            onChange={(e) => handleInputChange('materialId', e.target.value)}
-            disabled={isLoading}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">Select a material (optional)</option>
-            {/* TODO: Load actual materials from database */}
-            <option value="mat-1">Steel Alloy</option>
-            <option value="mat-2">Aluminum</option>
-            <option value="mat-3">Carbon Fiber</option>
-            <option value="mat-4">Plastic Composite</option>
-            <option value="mat-5">Titanium</option>
-          </select>
+          {loadingMaterials ? (
+            <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+          ) : (
+            <select
+              id="materialId"
+              value={formData.materialId}
+              onChange={(e) => handleInputChange('materialId', e.target.value)}
+              disabled={isLoading}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Select a material (optional)</option>
+              {materials.map(material => (
+                <option key={material.id} value={material.id}>
+                  {material.name} {material.supplier ? `(${material.supplier})` : ''}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 
