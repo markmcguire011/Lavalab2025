@@ -52,6 +52,40 @@ export function transformOrderFromDb(dbOrder: DatabaseOrder & { material_name?: 
   };
 }
 
+// Transform database row with material join to OrderWithMaterial interface
+export function transformOrderWithMaterialFromDb(dbOrder: DatabaseOrder & { 
+  materials?: {
+    id: string;
+    name: string;
+    description: string;
+    unit: string;
+    category?: string;
+    image_url?: string;
+  } 
+}): OrderWithMaterial {
+  const baseOrder = transformOrderFromDb({
+    ...dbOrder,
+    material_name: dbOrder.materials?.name
+  });
+
+  return {
+    ...baseOrder,
+    material: dbOrder.materials ? {
+      id: dbOrder.materials.id,
+      name: dbOrder.materials.name,
+      description: dbOrder.materials.description,
+      unit: dbOrder.materials.unit,
+      category: dbOrder.materials.category,
+      image_url: dbOrder.materials.image_url
+    } : {
+      id: dbOrder.material_id,
+      name: 'Unknown Material',
+      description: '',
+      unit: 'units'
+    }
+  };
+}
+
 // Transform client interface to database insert
 export function transformOrderForDb(order: Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'orderNumber' | 'materialName'> & { userId: string }): {
   user_id: string;

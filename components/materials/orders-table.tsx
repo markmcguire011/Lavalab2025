@@ -8,7 +8,7 @@ import { OrderRow } from "@/components/materials/order-row";
 import { SuggestedOrders } from "@/components/materials/suggested-orders";
 import { AddOrderModal } from "@/components/materials/add-order-modal";
 import { createClient } from "@/lib/supabase/client";
-import { Order, transformOrderFromDb, transformOrderForDb } from "@/lib/types/orders";
+import { Order, transformOrderForDb, transformOrderWithMaterialFromDb } from "@/lib/types/orders";
 import { OrderFormData } from "@/components/materials/add-order-form";
 
 export function OrdersTable() {
@@ -37,7 +37,11 @@ export function OrdersTable() {
           materials(
             id,
             name,
-            unit
+            description,
+            unit,
+            category,
+            supplier,
+            image_url
           )
         `)
         .order('created_at', { ascending: false });
@@ -45,12 +49,8 @@ export function OrdersTable() {
       if (error) throw error;
 
       const transformedOrders = data?.map((orderData: any) => {
-        const materialName = orderData.materials?.name;
-        
-        return transformOrderFromDb({
-          ...orderData,
-          material_name: materialName
-        });
+        // Use the enhanced transformation that handles material joins
+        return transformOrderWithMaterialFromDb(orderData);
       }) || [];
       
       setOrders(transformedOrders);
@@ -120,19 +120,19 @@ export function OrdersTable() {
           materials(
             id,
             name,
-            unit
+            description,
+            unit,
+            category,
+            supplier,
+            image_url
           )
         `)
         .single();
 
       if (error) throw error;
 
-      // Transform back and add to local state
-      const materialName = data.materials?.name;
-      const newOrder = transformOrderFromDb({
-        ...data,
-        material_name: materialName
-      });
+      // Transform back and add to local state using the enhanced transformation
+      const newOrder = transformOrderWithMaterialFromDb(data);
       
       setOrders(prev => [newOrder, ...prev]);
       
