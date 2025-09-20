@@ -80,14 +80,34 @@ export function OrdersTable() {
         throw new Error('User not authenticated');
       }
 
+      // Get selected material to auto-populate fields
+      const { data: materialData, error: materialError } = await supabase
+        .from('materials')
+        .select('*')
+        .eq('id', orderData.materialId)
+        .single();
+
+      if (materialError) throw materialError;
+
       // Get default delivery date (14 days from now)
       const expectedDelivery = new Date();
       expectedDelivery.setDate(expectedDelivery.getDate() + 14);
 
-      // Transform the form data for database insertion
+      // Calculate unit price and total from material data
+      const unitPrice = (materialData as any)?.unit_cost || undefined;
+      const totalAmount = unitPrice ? unitPrice * orderData.quantity : undefined;
+
+      // Transform the form data for database insertion with all auto-generated fields
       const dbOrder = transformOrderForDb({
-        ...orderData,
+        materialId: orderData.materialId,
+        quantity: orderData.quantity,
+        notes: orderData.notes,
+        unitPrice,
+        totalAmount,
+        supplier: (materialData as any)?.supplier || undefined,
+        supplierOrderId: undefined, // Can be updated later
         expectedDeliveryDate: expectedDelivery.toISOString().split('T')[0],
+        actualDeliveryDate: undefined,
         status: 'ordered' as const,
         userId: user.id
       });
