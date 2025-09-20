@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { OrdersHeader } from "./orders-header";
 import { OrderRow } from "./order-row";
 import { SuggestedOrders } from "./suggested-orders";
+import { AddOrderModal } from "./add-order-modal";
 import { createClient } from "@/lib/supabase/client";
-import { Order, transformOrderFromDb } from "@/lib/types/orders";
+import { Order, transformOrderFromDb, transformOrderForDb } from "@/lib/types/orders";
+import { OrderFormData } from "./add-order-form";
 
 export function OrdersTable() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -18,6 +20,7 @@ export function OrdersTable() {
   const [supplierFilter, setSupplierFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showAddModal, setShowAddModal] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -66,8 +69,54 @@ export function OrdersTable() {
   };
 
   const handleAddNew = () => {
-    console.log("Add new order clicked");
-    // TODO: Implement add new order functionality
+    setShowAddModal(true);
+  };
+
+  const handleAddOrder = async (orderData: OrderFormData) => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Transform the form data for database insertion
+      const dbOrder = transformOrderForDb({
+        ...orderData,
+        status: 'ordered' as const,
+        userId: user.id
+      });
+
+      const { data, error } = await (supabase as any)
+        .from('orders')
+        .insert([dbOrder])
+        .select(`
+          *,
+          materials(
+            id,
+            name,
+            unit
+          )
+        `)
+        .single();
+
+      if (error) throw error;
+
+      // Transform back and add to local state
+      const materialName = data.materials?.name;
+      const newOrder = transformOrderFromDb({
+        ...data,
+        material_name: materialName
+      });
+      
+      setOrders(prev => [newOrder, ...prev]);
+      
+      // Trigger refresh of suggested orders
+      setRefreshKey(prev => prev + 1);
+    } catch (err) {
+      console.error('Error creating order:', err);
+      throw err; // Re-throw to let the modal handle the error
+    }
   };
 
   const handleEdit = (id: string) => {
@@ -221,6 +270,12 @@ export function OrdersTable() {
       </div>
 
       <SuggestedOrders onOrderAdded={fetchOrders} key={refreshKey} />
+
+      <AddOrderModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSubmit={handleAddOrder}
+      />
     </div>
   );
 }
