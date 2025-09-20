@@ -70,7 +70,7 @@ export function AppSidebar({ isCollapsed = false, onToggleCollapse }: AppSidebar
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? (
-              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <ChevronRight className="h-4 w-4 text-transparent" />
             ) : (
               <ChevronLeft className="h-4 w-4 text-gray-400" />
             )}

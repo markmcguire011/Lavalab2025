@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { FulfillmentsTable } from "@/components/fulfillments/fulfillments-table";
 
 export default async function FulfillmentPage() {
   const supabase = await createClient();
@@ -10,11 +11,13 @@ export default async function FulfillmentPage() {
   }
 
   return (
-    <div className="gap-2 p-10">
+    <div className="flex-1 w-full flex flex-col gap-6 p-10">
       <div className="flex justify-between items-center py-3">
         <h1 className="text-3xl font-medium">Fulfillment</h1>
       </div>
-      
+      <div className="bg-white p-3 rounded-lg border border-gray-200">
+        <FulfillmentsTable />
+      </div>
     </div>
   );
 }
