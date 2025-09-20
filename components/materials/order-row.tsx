@@ -31,7 +31,7 @@ export function OrderRow({ order, onEdit, onCancel }: OrderRowProps) {
         </div>
       </div>
       
-      <div className="flex gap-3 border">
+      <div className="flex gap-3 border rounded-md">
         <div className="flex h-auto w-auto">
           {onEdit && canEdit && (
             <button

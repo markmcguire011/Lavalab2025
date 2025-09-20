@@ -12,7 +12,7 @@ interface InventoryAdderProps {
 
 export function InventoryAdder({ currentInventory, neededInventory, unit, onAdd, onSubtract }: InventoryAdderProps) {
   return (
-    <div className="flex bg-white border">
+    <div className="flex bg-white border rounded-md">
       <button 
         onClick={onSubtract}
         className="hover:bg-gray-50 transition-colors p-2"

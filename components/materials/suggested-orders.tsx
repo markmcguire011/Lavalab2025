@@ -159,22 +159,16 @@ export function SuggestedOrders({ onOrderAdded }: SuggestedOrdersProps) {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-orange-500" />
-          <h3 className="text-lg font-semibold text-gray-900">Suggested Orders</h3>
-        </div>
-        <div className="space-y-3">
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium text-gray-700">Suggested Orders</h3>
+        <div className="space-y-2">
           {[1, 2].map(i => (
-            <div key={i} className="flex items-center justify-between p-4 border rounded-lg bg-orange-50">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gray-200 rounded animate-pulse"></div>
-                <div>
-                  <div className="h-4 bg-gray-200 rounded animate-pulse w-32 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded animate-pulse w-48"></div>
-                </div>
+            <div key={i} className="flex items-center justify-between p-3 border rounded bg-gray-50">
+              <div>
+                <div className="h-3 bg-gray-200 rounded animate-pulse w-32 mb-1"></div>
+                <div className="h-2 bg-gray-200 rounded animate-pulse w-24"></div>
               </div>
-              <div className="w-24 h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-16 h-6 bg-gray-200 rounded animate-pulse"></div>
             </div>
           ))}
         </div>
@@ -184,20 +178,17 @@ export function SuggestedOrders({ onOrderAdded }: SuggestedOrdersProps) {
 
   if (error) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-orange-500" />
-          <h3 className="text-lg font-semibold text-gray-900">Suggested Orders</h3>
-        </div>
-        <div className="text-center py-4">
-          <p className="text-red-600 text-sm">Error loading suggestions: {error}</p>
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium text-gray-700">Suggested Orders</h3>
+        <div className="text-center py-3">
+          <p className="text-red-600 text-xs">Error loading suggestions</p>
           <Button 
             onClick={fetchSuggestedOrders} 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-1 h-7 px-3 text-xs"
           >
-            Try Again
+            Retry
           </Button>
         </div>
       </div>
@@ -205,96 +196,41 @@ export function SuggestedOrders({ onOrderAdded }: SuggestedOrdersProps) {
   }
 
   if (suggestedOrders.length === 0) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-orange-500" />
-          <h3 className="text-lg font-semibold text-gray-900">Suggested Orders</h3>
-        </div>
-        <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <TrendingUp className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500">All materials are sufficiently stocked!</p>
-          <p className="text-sm text-gray-400 mt-1">
-            Suggestions will appear when needed inventory exceeds current inventory.
-          </p>
-        </div>
-      </div>
-    );
+    return null; // Don't show anything when there are no suggestions
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <TrendingUp className="h-5 w-5 text-orange-500" />
-        <h3 className="text-lg font-semibold text-gray-900">Suggested Orders</h3>
-        <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">
-          {suggestedOrders.length} suggestion{suggestedOrders.length !== 1 ? 's' : ''}
-        </span>
-      </div>
+    <div className="space-y-3 mt-8 pt-6 border-t">
+      <h3 className="text-sm font-medium text-gray-700">
+        Suggested Orders ({suggestedOrders.length})
+      </h3>
       
-      <div className="space-y-3">
+      <div className="space-y-2">
         {suggestedOrders.map((suggestion) => (
           <div 
             key={suggestion.materialId} 
-            className="flex items-center justify-between p-4 border rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors"
+            className="flex items-center justify-between p-3 border rounded bg-gray-50"
           >
-            <div className="flex items-center gap-4 flex-1">
-              <div className="w-10 h-10 bg-orange-200 rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-orange-600" />
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-900">{suggestion.materialName}</span>
               </div>
-              <div className="flex-1">
-                <h4 className="font-medium text-gray-900">{suggestion.materialName}</h4>
-                <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                  <span>
-                    Need: <span className="font-medium text-orange-700">{suggestion.shortfall} {suggestion.unit}</span>
-                  </span>
-                  <span>•</span>
-                  <span>Current: {suggestion.currentInventory} {suggestion.unit}</span>
-                  {suggestion.pendingOrderQuantity > 0 && (
-                    <>
-                      <span>•</span>
-                      <span>Pending: <span className="font-medium text-blue-600">{suggestion.pendingOrderQuantity} {suggestion.unit}</span></span>
-                    </>
-                  )}
-                  <span>•</span>
-                  <span>Target: {suggestion.neededInventory} {suggestion.unit}</span>
-                  {suggestion.supplier && (
-                    <>
-                      <span>•</span>
-                      <span>{suggestion.supplier}</span>
-                    </>
-                  )}
+              {suggestion.estimatedTotal && (
+                <div className="text-xs text-gray-600 mt-1">
+                  Est. ${suggestion.estimatedTotal.toFixed(2)}
+                  {suggestion.supplier && <span> • {suggestion.supplier}</span>}
                 </div>
-                {suggestion.pendingOrderQuantity > 0 && (
-                  <div className="text-xs text-blue-600 mt-1">
-                    Effective inventory: {suggestion.effectiveInventory} {suggestion.unit} (includes pending orders)
-                  </div>
-                )}
-                {suggestion.estimatedTotal && (
-                  <div className="text-sm text-gray-600 mt-1">
-                    Estimated cost: <span className="font-medium">${suggestion.estimatedTotal.toFixed(2)}</span>
-                    {suggestion.unitCost && (
-                      <span className="text-gray-400"> (${suggestion.unitCost.toFixed(2)}/{suggestion.unit})</span>
-                    )}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-            
+            <span className="text-xs text-gray-500">Need {suggestion.shortfall} {suggestion.unit}</span>
             <Button
               onClick={() => handleAddOrder(suggestion)}
               disabled={addingOrders.has(suggestion.materialId)}
-              className="bg-orange-500 hover:bg-orange-600 text-white"
+              variant="outline"
               size="sm"
+              className="ml-3 h-7 px-3 text-xs"
             >
-              {addingOrders.has(suggestion.materialId) ? (
-                'Adding...'
-              ) : (
-                <>
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add Order
-                </>
-              )}
+              {addingOrders.has(suggestion.materialId) ? 'Adding...' : 'Order'}
             </Button>
           </div>
         ))}
