@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image"  ;
-import { LogOut } from "lucide-react";
+import { LogOut, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -39,7 +39,7 @@ export function AppSidebar() {
     <div className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 flex flex-col">
       {/* Logo/Header */}
       <div className="pt-6 px-6">
-        <div className="flex items-center gap-3">
+        <Link href="/dashboard" className="flex items-center gap-3">
           <Image 
             src="/tally_logo_2.svg" 
             alt="Tally" 
@@ -48,7 +48,7 @@ export function AppSidebar() {
             className="w-8 h-8"
           />
           <span className="text-xl font-semibold text-brand-500">Tally</span>
-        </div>
+        </Link>
       </div>
 
       {/* Navigation */}
@@ -61,7 +61,7 @@ export function AppSidebar() {
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-2 border border-transparent rounded-lg text-sm font-normal transition-colors ${
                     isActive
                       ? "bg-brand-50 text-brand-700 border border-brand-200"
                       : "text-gray-400 hover:text-gray-900 hover:bg-gray-50"
@@ -101,7 +101,11 @@ function UserInfo() {
     getUser();
   }, [supabase]);
 
-  const getInitials = (email: string) => {
+  const getInitials = (user: User) => {
+    if (user.user_metadata?.first_name && user.user_metadata?.last_name) {
+      return (user.user_metadata.first_name[0] + user.user_metadata.last_name[0]).toUpperCase();
+    }
+    const email = user.email || '';
     const parts = email.split('@')[0].split('.');
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -117,10 +121,10 @@ function UserInfo() {
   if (!user) return null;
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="p-4 space-y-4">
       <button
         onClick={handleSignOut}
-        className="w-full flex items-center font-normal text-left text-red-500 hover:text-red-600 text-sm px-2 py-1 rounded transition-colors"
+        className="w-full flex items-center font-normal text-left text-red-500 hover:text-red-600 hover:bg-gray-50 text-sm px-2 py-3 rounded transition-colors"
         title="Sign out"
       >
         <LogOut className="h-5 w-5 mr-6" />
@@ -128,16 +132,25 @@ function UserInfo() {
       </button>
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
-          {getInitials(user.email || '')}
+          {getInitials(user)}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {user.email?.split('@')[0]}
+            {user.user_metadata?.first_name && user.user_metadata?.last_name 
+              ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
+              : user.email?.split('@')[0]
+            }
           </p>
           <p className="text-xs text-gray-500 truncate">
             {user.email}
           </p>
         </div>
+        <button
+          className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors"
+          title="Edit profile"
+        >
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );

@@ -2,8 +2,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -12,6 +10,9 @@ export default async function DashboardPage() {
   if (error || !data?.claims) {
     redirect("/auth/login");
   }
+
+  const { data: { user } } = await supabase.auth.getUser();
+  const firstName = user?.user_metadata?.first_name;
 
   const quickActions = [
     {
@@ -41,41 +42,44 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-8 p-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here's what you can do to get started.
+    <div className="flex-1 w-full flex flex-col gap-12 p-8">
+      <div className="space-y-3">
+        <h1 className="text-2xl font-medium text-gray-900">
+          Welcome{firstName ? ` ${firstName}` : ''}
+        </h1>
+        <p className="text-gray-500 text-sm">
+          Manage your inventory and operations
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {quickActions.map((action) => {
+      <div className="grid grid-cols-3 gap-8">
+        {quickActions.slice(0, 3).map((action) => {
           return (
-            <Card key={action.href} className="hover:shadow-md transition-shadow">
-              <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                <div className="flex items-center space-x-4">
+            <Link 
+              key={action.href} 
+              href={action.href}
+              className="group block p-6 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+            >
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-brand-50 transition-colors">
                   <Image 
                     src={action.icon} 
                     alt={`${action.title} icon`}
-                    width={32} 
-                    height={32}
-                    className="h-8 w-8"
+                    width={24} 
+                    height={24}
+                    className="h-6 w-6 opacity-60"
                   />
-                  <div>
-                    <CardTitle className="text-xl">{action.title}</CardTitle>
-                    <CardDescription>{action.description}</CardDescription>
-                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full">
-                  <Link href={action.href}>
-                    Go to {action.title}
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+                <div className="space-y-1">
+                  <h3 className="font-medium text-gray-900 group-hover:text-gray-700">
+                    {action.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    {action.description}
+                  </p>
+                </div>
+              </div>
+            </Link>
           );
         })}
       </div>
