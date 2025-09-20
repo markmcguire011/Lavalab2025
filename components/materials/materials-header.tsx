@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MaterialsSearch } from "./materials-search";
-import { MaterialsFilter } from "./materials-filter";
+import { MaterialsSearch } from "@/components/materials/materials-search";
+import { MaterialsFilter } from "@/components/materials/materials-filter";
 
 interface MaterialsHeaderProps {
   searchTerm: string;

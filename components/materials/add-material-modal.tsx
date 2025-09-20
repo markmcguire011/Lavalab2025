@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AddMaterialForm, MaterialFormData } from "./add-material-form";
+import { AddMaterialForm, MaterialFormData } from "@/components/materials/add-material-form";
 
 interface AddMaterialModalProps {
   isOpen: boolean;

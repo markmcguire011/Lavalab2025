@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { OrdersHeader } from "./orders-header";
-import { OrderRow } from "./order-row";
-import { SuggestedOrders } from "./suggested-orders";
-import { AddOrderModal } from "./add-order-modal";
+import { OrdersHeader } from "@/components/materials/orders-header";
+import { OrderRow } from "@/components/materials/order-row";
+import { SuggestedOrders } from "@/components/materials/suggested-orders";
+import { AddOrderModal } from "@/components/materials/add-order-modal";
 import { createClient } from "@/lib/supabase/client";
 import { Order, transformOrderFromDb, transformOrderForDb } from "@/lib/types/orders";
-import { OrderFormData } from "./add-order-form";
+import { OrderFormData } from "@/components/materials/add-order-form";
 
 export function OrdersTable() {
   const [orders, setOrders] = useState<Order[]>([]);

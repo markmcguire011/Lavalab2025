@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { Plus, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MaterialsHeader } from "./materials-header";
-import { MaterialRow } from "./material-row";
-import { AddMaterialModal } from "./add-material-modal";
+import { MaterialsHeader } from "@/components/materials/materials-header";
+import { MaterialRow } from "@/components/materials/material-row";
+import { AddMaterialModal } from "@/components/materials/add-material-modal";
 import { createClient } from "@/lib/supabase/client";
 import { Material, transformMaterialFromDb, transformMaterialForDb } from "@/lib/types/materials";
-import { MaterialFormData } from "./add-material-form";
+import { MaterialFormData } from "@/components/materials/add-material-form";
 import { Input } from "@/components/ui/input";
 
 export function InventoryTable() {

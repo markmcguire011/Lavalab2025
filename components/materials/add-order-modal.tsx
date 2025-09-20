@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AddOrderForm, OrderFormData } from "./add-order-form";
+import { AddOrderForm, OrderFormData } from "@/components/materials/add-order-form";
 
 interface AddOrderModalProps {
   isOpen: boolean;

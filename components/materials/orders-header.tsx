@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { OrdersSearch } from "./orders-search";
-import { OrdersFilter } from "./orders-filter";
+import { OrdersSearch } from "@/components/materials/orders-search";
+import { OrdersFilter } from "@/components/materials/orders-filter";
 
 interface OrdersHeaderProps {
   searchTerm: string;

@@ -1,4 +1,4 @@
-import { InventoryAdder } from "./inventory-adder";
+import { InventoryAdder } from "@/components/materials/inventory-adder";
 import { Material } from "@/lib/types/materials";
 
 interface MaterialRowProps {
