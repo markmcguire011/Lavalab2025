@@ -39,42 +39,35 @@ A comprehensive inventory management application built for modern businesses to 
 
 ## Core Features
 
-### 📦 Materials Management
+### Materials Management
 - **Inventory Tracking** - Real-time current and needed inventory levels
 - **Material Profiles** - Comprehensive material data including suppliers, costs, and images
 - **Smart Suggestions** - Automated ordering suggestions based on inventory levels
 - **Bulk Operations** - Efficient add/subtract inventory actions
 
-### 🛍️ Products Catalog
+### Products Catalog
 - **Product Creation** - Link products to materials for automatic inventory calculations
 - **Image Management** - Product images with fallback to material images
 - **Category Organization** - Flexible categorization and filtering system
 - **Price Management** - Dynamic pricing with currency formatting
 
-### 📋 Order Management
+### Order Management
 - **Purchase Orders** - Track material orders from suppliers
 - **Status Workflow** - Complete order lifecycle from ordered to delivered
 - **Automatic Calculations** - Auto-populate pricing and delivery estimates
 - **Supplier Integration** - Manage multiple supplier relationships
 
-### 🚚 Fulfillment System
+### Fulfillment System
 - **Customer Orders** - Process external orders for products
 - **Inventory Integration** - Automatic material need calculations
 - **Status Tracking** - Real-time order status updates
 - **Customer Management** - Track orders by customer email
 
-### 🔍 Advanced Filtering & Search
+### Advanced Filtering & Search
 - **Multi-criteria Filtering** - Filter by status, supplier, customer, category
 - **Real-time Search** - Instant search across all entity types
 - **Saved Filter States** - Persistent filter preferences
 - **Click-outside Handling** - Intuitive UX for filter panels
-
-### 👤 User Experience
-- **Collapsible Sidebar** - Space-efficient navigation with icon/text modes
-- **Responsive Design** - Mobile-first approach with desktop optimization
-- **Loading States** - Skeleton loading for better perceived performance
-- **Error Handling** - Graceful error states with retry mechanisms
-- **Toast Notifications** - Real-time feedback for user actions
 
 ## Architecture
 
