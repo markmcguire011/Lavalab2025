@@ -1,105 +1,172 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Tally - Inventory Management System
+
+A comprehensive inventory management application built for modern businesses to track materials, products, orders, and fulfillments with an intuitive interface and powerful automation features.
 
 <p align="center">
- The fastest way to build apps with Next.js and Supabase
+  <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
+  <a href="#core-features"><strong>Features</strong></a> ·
+  <a href="#architecture"><strong>Architecture</strong></a> ·
+  <a href="#setup"><strong>Setup</strong></a> ·
+  <a href="#database-schema"><strong>Database</strong></a>
 </p>
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## Tech Stack
 
-## Features
+### Frontend
+- **Next.js 14** - React framework with App Router for server-side rendering and routing
+- **TypeScript** - Type safety and enhanced developer experience
+- **Tailwind CSS** - Utility-first CSS framework for responsive design
+- **shadcn/ui** - Modern component library built on Radix UI primitives
+- **Lucide React** - Beautiful, customizable SVG icons
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+### Backend & Database
+- **Supabase** - PostgreSQL database with real-time capabilities
+- **Row Level Security (RLS)** - Database-level security for multi-tenant architecture
+- **Database Triggers** - Automatic timestamp updates and data consistency
+- **PostgreSQL Functions** - Custom database logic for complex operations
 
-## Demo
+### Authentication & Security
+- **Supabase Auth** - Email/password authentication with session management
+- **Cookie-based Sessions** - Secure session handling across server/client components
+- **Protected Routes** - Route-level authentication guards
+- **User Metadata** - Extended user profiles with first/last name
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+### Development & Deployment
+- **React Server Components** - Optimized rendering with server/client component architecture
+- **Optimistic UI Updates** - Immediate feedback for better user experience
+- **Component Architecture** - Modular, reusable components with clear separation of concerns
+- **Type-safe Database Queries** - TypeScript interfaces for all database operations
 
-## Deploy to Vercel
+## Core Features
 
-Vercel deployment will guide you through creating a Supabase account and project.
+### 📦 Materials Management
+- **Inventory Tracking** - Real-time current and needed inventory levels
+- **Material Profiles** - Comprehensive material data including suppliers, costs, and images
+- **Smart Suggestions** - Automated ordering suggestions based on inventory levels
+- **Bulk Operations** - Efficient add/subtract inventory actions
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+### 🛍️ Products Catalog
+- **Product Creation** - Link products to materials for automatic inventory calculations
+- **Image Management** - Product images with fallback to material images
+- **Category Organization** - Flexible categorization and filtering system
+- **Price Management** - Dynamic pricing with currency formatting
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+### 📋 Order Management
+- **Purchase Orders** - Track material orders from suppliers
+- **Status Workflow** - Complete order lifecycle from ordered to delivered
+- **Automatic Calculations** - Auto-populate pricing and delivery estimates
+- **Supplier Integration** - Manage multiple supplier relationships
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+### 🚚 Fulfillment System
+- **Customer Orders** - Process external orders for products
+- **Inventory Integration** - Automatic material need calculations
+- **Status Tracking** - Real-time order status updates
+- **Customer Management** - Track orders by customer email
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+### 🔍 Advanced Filtering & Search
+- **Multi-criteria Filtering** - Filter by status, supplier, customer, category
+- **Real-time Search** - Instant search across all entity types
+- **Saved Filter States** - Persistent filter preferences
+- **Click-outside Handling** - Intuitive UX for filter panels
 
-## Clone and run locally
+### 👤 User Experience
+- **Collapsible Sidebar** - Space-efficient navigation with icon/text modes
+- **Responsive Design** - Mobile-first approach with desktop optimization
+- **Loading States** - Skeleton loading for better perceived performance
+- **Error Handling** - Graceful error states with retry mechanisms
+- **Toast Notifications** - Real-time feedback for user actions
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+## Architecture
 
-2. Create a Next.js app using the Supabase Starter template npx command
+### Component Structure
+```
+components/
+├── ui/                 # shadcn/ui base components
+├── materials/          # Materials management components
+├── products/           # Products catalog components
+├── fulfillments/       # Order fulfillment components
+├── sidebar/            # Navigation and layout
+└── account/           # User profile management
+```
 
+### Database Design
+- **Multi-tenant Architecture** - User-scoped data with RLS policies
+- **Relational Integrity** - Foreign key constraints and cascade deletes
+- **Optimized Queries** - Indexed columns for performance
+- **Audit Trail** - Created/updated timestamps on all entities
+
+### State Management
+- **Server State** - Supabase real-time subscriptions
+- **Client State** - React hooks for UI state
+- **Optimistic Updates** - Immediate UI feedback with server sync
+- **Error Boundaries** - Graceful error handling and recovery
+
+## Setup
+
+1. **Clone the repository**
    ```bash
-   npx create-next-app --example with-supabase with-supabase-app
+   git clone <repository-url>
+   cd tally-inventory-management
    ```
 
+2. **Install dependencies**
    ```bash
-   yarn create next-app --example with-supabase with-supabase-app
+   npm install
    ```
 
+3. **Configure Supabase**
+   - Create a new Supabase project at [supabase.com](https://supabase.com)
+   - Copy your project URL and anon key
+   - Rename `.env.example` to `.env.local`
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Run database migrations**
    ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
+   # Execute the SQL files in supabase/migrations/ in order
+   # Or use Supabase CLI for automated migration
    ```
 
-3. Use `cd` to change into the app's directory
-
-   ```bash
-   cd with-supabase-app
-   ```
-
-4. Rename `.env.example` to `.env.local` and update the following:
-
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
-
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
-
+5. **Start development server**
    ```bash
    npm run dev
    ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+## Database Schema
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+### Core Tables
+- **materials** - Raw materials with inventory tracking
+- **products** - Finished goods linked to materials  
+- **orders** - Purchase orders for materials
+- **fulfillments** - Customer orders for products
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+### Key Features
+- **Row Level Security** - User isolation and data security
+- **Foreign Key Relationships** - Data integrity and referential consistency
+- **Automated Triggers** - Timestamp updates and inventory calculations
+- **Indexed Queries** - Optimized performance for common operations
 
-## Feedback and issues
+### Sample Queries
+```sql
+-- Get materials with low inventory
+SELECT * FROM materials 
+WHERE current_inventory < needed_inventory 
+AND user_id = auth.uid();
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+-- Get fulfillments with product details
+SELECT f.*, p.name as product_name 
+FROM fulfillments f
+JOIN products p ON f.product_id = p.id
+WHERE f.user_id = auth.uid();
+```
 
-## More Supabase examples
+## Key Innovations
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+1. **Intelligent Inventory Management** - Automatic material need calculations based on product fulfillments
+2. **Unified Search Experience** - Consistent filtering patterns across all entity types  
+3. **Progressive Enhancement** - Works with JavaScript disabled, enhanced with interactivity
+4. **Type-safe Database Layer** - End-to-end type safety from database to UI
+5. **Real-time Updates** - Live data synchronization across browser tabs
+6. **Optimistic UI Pattern** - Immediate feedback with graceful error handling
