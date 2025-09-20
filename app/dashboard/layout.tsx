@@ -1,16 +1,9 @@
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
 
-export default async function DashboardLayout({
+export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <AppSidebar />
-      <main className="ml-64">
-        {children}
-      </main>
-    </>
-  );
+  return <DashboardLayout>{children}</DashboardLayout>;
 }
