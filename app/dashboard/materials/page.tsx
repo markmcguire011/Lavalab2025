@@ -13,7 +13,7 @@ export default async function MaterialsPage() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-6 p-5">
+    <div className="flex-1 w-full flex flex-col gap-6 p-10">
       <Tabs defaultValue="inventory" className="w-full">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Materials</h1>
