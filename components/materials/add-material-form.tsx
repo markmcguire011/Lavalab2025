@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Material } from "@/lib/types/materials";
 
 interface AddMaterialFormProps {
   onSubmit: (materialData: MaterialFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  editingMaterial?: Material | null;
 }
 
 export interface MaterialFormData {
@@ -25,19 +27,36 @@ export interface MaterialFormData {
   lowStockThreshold?: number;
 }
 
-export function AddMaterialForm({ onSubmit, onCancel, isLoading = false }: AddMaterialFormProps) {
+export function AddMaterialForm({ onSubmit, onCancel, isLoading = false, editingMaterial }: AddMaterialFormProps) {
   const [formData, setFormData] = useState<MaterialFormData>({
-    name: '',
-    description: '',
-    image_url: '',
-    currentInventory: 0,
-    unit: '',
-    category: '',
-    unitCost: undefined,
-    supplier: '',
-    sku: '',
-    lowStockThreshold: undefined
+    name: editingMaterial?.name || '',
+    description: editingMaterial?.description || '',
+    image_url: editingMaterial?.image_url || '',
+    currentInventory: editingMaterial?.currentInventory || 0,
+    unit: editingMaterial?.unit || '',
+    category: editingMaterial?.category || '',
+    unitCost: editingMaterial?.unitCost,
+    supplier: editingMaterial?.supplier || '',
+    sku: editingMaterial?.sku || '',
+    lowStockThreshold: editingMaterial?.lowStockThreshold
   });
+
+  useEffect(() => {
+    if (editingMaterial) {
+      setFormData({
+        name: editingMaterial.name || '',
+        description: editingMaterial.description || '',
+        image_url: editingMaterial.image_url || '',
+        currentInventory: editingMaterial.currentInventory || 0,
+        unit: editingMaterial.unit || '',
+        category: editingMaterial.category || '',
+        unitCost: editingMaterial.unitCost,
+        supplier: editingMaterial.supplier || '',
+        sku: editingMaterial.sku || '',
+        lowStockThreshold: editingMaterial.lowStockThreshold
+      });
+    }
+  }, [editingMaterial]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,7 +226,10 @@ export function AddMaterialForm({ onSubmit, onCancel, isLoading = false }: AddMa
           className="bg-brand-500 hover:bg-brand-600 text-white"
           disabled={isLoading || !formData.name || !formData.description || !formData.unit}
         >
-          {isLoading ? 'Adding...' : 'Add Material'}
+          {isLoading 
+            ? (editingMaterial ? 'Saving...' : 'Adding...') 
+            : (editingMaterial ? 'Save' : 'Add Material')
+          }
         </Button>
       </div>
     </form>

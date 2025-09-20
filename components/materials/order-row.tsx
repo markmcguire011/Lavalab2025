@@ -1,5 +1,6 @@
-import { Order, formatOrderDate, getOrderStatusColor, canCancelOrder, canEditOrder } from "@/lib/types/orders";
+import { Order, getOrderStatusColor, canCancelOrder, canEditOrder } from "@/lib/types/orders";
 import { Pencil, X } from "lucide-react";
+import Image from "next/image";
 
 interface OrderRowProps {
   order: Order;
@@ -15,10 +16,20 @@ export function OrderRow({ order, onEdit, onCancel }: OrderRowProps) {
   return (
     <div className="flex items-center justify-between p-4 rounded-lg bg-white">
       <div className="flex items-center gap-4 flex-1">
-        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-          <div className="w-8 h-8 bg-gray-300 rounded flex items-center justify-center">
-            <span className="text-xs text-gray-600 font-mono">#{order.orderNumber.slice(-3)}</span>
-          </div>
+        <div className="w-12 h-12 border border-gray-200 border-2 rounded-lg flex items-center justify-center">
+          {order.materialImageUrl ? (
+            <Image 
+              src={order.materialImageUrl} 
+              alt={order.materialName || 'Material'} 
+              width={32} 
+              height={32}
+              className="w-8 h-8 object-cover rounded"
+            />
+          ) : (
+            <div className="w-8 h-8 bg-gray-300 rounded flex items-center justify-center">
+              <span className="text-xs text-gray-600 font-mono">#{order.orderNumber.slice(-3)}</span>
+            </div>
+          )}
         </div>
         <div className="flex-1">
           <h3 className="font-medium text-gray-900">{order.materialName || 'Unknown Material'}</h3>

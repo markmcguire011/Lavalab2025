@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AddMaterialForm, MaterialFormData } from "@/components/materials/add-material-form";
+import { Material } from "@/lib/types/materials";
 
 interface AddMaterialModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (materialData: MaterialFormData) => Promise<void>;
+  editingMaterial?: Material | null;
 }
 
-export function AddMaterialModal({ isOpen, onClose, onSubmit }: AddMaterialModalProps) {
+export function AddMaterialModal({ isOpen, onClose, onSubmit, editingMaterial }: AddMaterialModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -64,7 +66,9 @@ export function AddMaterialModal({ isOpen, onClose, onSubmit }: AddMaterialModal
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Add New Material</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {editingMaterial ? 'Edit Material' : 'Add New Material'}
+          </h2>
           <Button
             variant="ghost"
             size="sm"
@@ -81,6 +85,7 @@ export function AddMaterialModal({ isOpen, onClose, onSubmit }: AddMaterialModal
             onSubmit={handleSubmit}
             onCancel={handleClose}
             isLoading={isLoading}
+            editingMaterial={editingMaterial}
           />
         </div>
       </div>

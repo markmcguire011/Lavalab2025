@@ -20,6 +20,7 @@ export function InventoryTable() {
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -137,6 +138,51 @@ export function InventoryTable() {
     } catch (err) {
       console.error('Error adding material:', err);
       throw err; // Re-throw to let the modal handle the error
+    }
+  };
+
+  const handleUpdateMaterial = async (materialData: MaterialFormData) => {
+    if (!editingMaterial) return;
+
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Transform the form data for database update, preserving existing values
+      const dbMaterial = transformMaterialForDb({
+        ...materialData,
+        currentInventory: editingMaterial.currentInventory, // Preserve current inventory
+        neededInventory: editingMaterial.neededInventory, // Preserve needed inventory
+        status: editingMaterial.status, // Preserve status
+        userId: user.id
+      });
+
+      const { data, error } = await (supabase as any)
+        .from('materials')
+        .update(dbMaterial)
+        .eq('id', editingMaterial.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Transform back and update local state
+      const updatedMaterial = transformMaterialFromDb(data);
+      setMaterials(prev => prev.map(m => m.id === editingMaterial.id ? updatedMaterial : m));
+      setEditingMaterial(null);
+    } catch (err) {
+      console.error('Error updating material:', err);
+      throw err; // Re-throw to let the modal handle the error
+    }
+  };
+
+  const handleEdit = (id: string) => {
+    const material = materials.find(m => m.id === id);
+    if (material) {
+      setEditingMaterial(material);
     }
   };
 
@@ -267,15 +313,20 @@ export function InventoryTable() {
               material={material}
               onAdd={handleAdd}
               onSubtract={handleSubtract}
+              onEdit={handleEdit}
             />
           ))
         )}
       </div>
 
       <AddMaterialModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSubmit={handleAddMaterial}
+        isOpen={showAddModal || !!editingMaterial}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditingMaterial(null);
+        }}
+        onSubmit={editingMaterial ? handleUpdateMaterial : handleAddMaterial}
+        editingMaterial={editingMaterial}
       />
     </div>
   );
