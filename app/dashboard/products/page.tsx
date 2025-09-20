@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { ProductsGrid } from "@/components/products/products-grid";
 
-export default async function ProtectedPage() {
+export default async function ProductsPage() {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getClaims();
@@ -15,6 +16,7 @@ export default async function ProtectedPage() {
       <div className="flex justify-between items-center py-3">
         <h1 className="text-3xl font-medium">Products</h1>
       </div>
+      <ProductsGrid />
     </div>
   );
 }
