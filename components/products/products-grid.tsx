@@ -19,6 +19,7 @@ export function ProductsGrid() {
   const [materialFilter, setMaterialFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -116,9 +117,60 @@ export function ProductsGrid() {
     }
   };
 
+  const handleUpdateProduct = async (productData: ProductFormData) => {
+    if (!editingProduct) return;
+
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Transform the form data for database update
+      const dbProduct = transformProductForDb({
+        ...productData,
+        userId: user.id
+      });
+
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .update(dbProduct)
+        .eq('id', editingProduct.id)
+        .select(`
+          *,
+          materials(
+            id,
+            name,
+            description,
+            unit,
+            category,
+            supplier
+          )
+        `)
+        .single();
+
+      if (error) throw error;
+
+      // Transform back and update local state
+      const updatedProduct = transformProductFromDb({
+        ...data,
+        material_name: data.materials?.name
+      });
+      
+      setProducts(prev => prev.map(p => p.id === editingProduct.id ? updatedProduct : p));
+      setEditingProduct(null);
+    } catch (err) {
+      console.error('Error updating product:', err);
+      throw err; // Re-throw to let the modal handle the error
+    }
+  };
+
   const handleEdit = (id: string) => {
-    console.log("Edit product:", id);
-    // TODO: Implement edit product functionality
+    const product = products.find(p => p.id === id);
+    if (product) {
+      setEditingProduct(product);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -263,9 +315,13 @@ export function ProductsGrid() {
       </div>
 
       <AddProductModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSubmit={handleAddProduct}
+        isOpen={showAddModal || !!editingProduct}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditingProduct(null);
+        }}
+        onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}
+        editingProduct={editingProduct}
       />
     </div>
   );

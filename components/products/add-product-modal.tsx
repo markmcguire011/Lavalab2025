@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AddProductForm, ProductFormData } from "@/components/products/add-product-form";
+import { Product } from "@/lib/types/products";
 
 interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (productData: ProductFormData) => Promise<void>;
+  editingProduct?: Product | null;
 }
 
-export function AddProductModal({ isOpen, onClose, onSubmit }: AddProductModalProps) {
+export function AddProductModal({ isOpen, onClose, onSubmit, editingProduct }: AddProductModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -64,7 +66,9 @@ export function AddProductModal({ isOpen, onClose, onSubmit }: AddProductModalPr
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Create New Product</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {editingProduct ? 'Edit Product' : 'Create New Product'}
+          </h2>
           <Button
             variant="ghost"
             size="sm"
@@ -81,6 +85,7 @@ export function AddProductModal({ isOpen, onClose, onSubmit }: AddProductModalPr
             onSubmit={handleSubmit}
             onCancel={handleClose}
             isLoading={isLoading}
+            editingProduct={editingProduct}
           />
         </div>
       </div>

@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 import { Material, transformMaterialFromDb } from "@/lib/types/materials";
+import { Product } from "@/lib/types/products";
 
 interface AddProductFormProps {
   onSubmit: (productData: ProductFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  editingProduct?: Product | null;
 }
 
 export interface ProductFormData {
@@ -23,22 +25,35 @@ export interface ProductFormData {
   materialId?: string;
 }
 
-export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddProductFormProps) {
+export function AddProductForm({ onSubmit, onCancel, isLoading = false, editingProduct }: AddProductFormProps) {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [formData, setFormData] = useState<ProductFormData>({
-    name: '',
-    description: '',
-    category: '',
-    price: undefined,
-    imageUrl: '',
-    materialId: ''
+    name: editingProduct?.name || '',
+    description: editingProduct?.description || '',
+    category: editingProduct?.category || '',
+    price: editingProduct?.price,
+    imageUrl: editingProduct?.imageUrl || '',
+    materialId: editingProduct?.materialId || ''
   });
   const supabase = createClient();
 
   useEffect(() => {
     fetchMaterials();
   }, []);
+
+  useEffect(() => {
+    if (editingProduct) {
+      setFormData({
+        name: editingProduct.name || '',
+        description: editingProduct.description || '',
+        category: editingProduct.category || '',
+        price: editingProduct.price,
+        imageUrl: editingProduct.imageUrl || '',
+        materialId: editingProduct.materialId || ''
+      });
+    }
+  }, [editingProduct]);
 
   const fetchMaterials = async () => {
     try {
@@ -193,7 +208,10 @@ export function AddProductForm({ onSubmit, onCancel, isLoading = false }: AddPro
           className="bg-brand-500 hover:bg-brand-600 text-white"
           disabled={isLoading || !formData.name}
         >
-          {isLoading ? 'Creating...' : 'Create Product'}
+          {isLoading 
+            ? (editingProduct ? 'Saving...' : 'Creating...') 
+            : (editingProduct ? 'Save' : 'Create Product')
+          }
         </Button>
       </div>
     </form>
