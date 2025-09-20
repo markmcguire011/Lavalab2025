@@ -1,4 +1,4 @@
-import { Order as DatabaseOrder } from './database';
+import { Order as DatabaseOrder } from '@/lib/types/database';
 
 // Client-side interface for orders (what components expect)
 export interface Order {

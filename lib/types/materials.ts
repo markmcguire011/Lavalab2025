@@ -1,4 +1,4 @@
-import { Material as DatabaseMaterial } from './database';
+import { Material as DatabaseMaterial } from '@/lib/types/database';
 
 // Client-side interface for materials (what components expect)
 export interface Material {

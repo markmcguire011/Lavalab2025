@@ -1,4 +1,4 @@
-import { Product as DatabaseProduct } from './database';
+import { Product as DatabaseProduct } from '@/lib/types/database';
 
 // Client-side interface for products (what components expect)
 export interface Product {
