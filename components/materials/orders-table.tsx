@@ -5,9 +5,9 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OrdersHeader } from "./orders-header";
 import { OrderRow } from "./order-row";
+import { SuggestedOrders } from "./suggested-orders";
 import { createClient } from "@/lib/supabase/client";
-import { Order, transformOrderFromDb, formatOrderDate } from "@/lib/types/orders";
-import { transformMaterialFromDb } from "@/lib/types/materials";
+import { Order, transformOrderFromDb } from "@/lib/types/orders";
 
 export function OrdersTable() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -28,9 +28,15 @@ export function OrdersTable() {
       setLoading(true);
       const { data, error } = await supabase
         .from('orders')
-        .select('*')
-        .eq('status', 'pending')
-        .order('order_number');
+        .select(`
+          *,
+          materials!inner(
+            id,
+            name,
+            unit
+          )
+        `)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
@@ -131,6 +137,8 @@ export function OrdersTable() {
             </div>
           ))}
         </div>
+        
+        <SuggestedOrders />
       </div>
     );
   }
@@ -200,6 +208,8 @@ export function OrdersTable() {
           ))
         )}
       </div>
+
+      <SuggestedOrders onOrderAdded={fetchOrders} />
     </div>
   );
 }

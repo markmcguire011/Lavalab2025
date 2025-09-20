@@ -25,11 +25,11 @@ export function MaterialRow({ material, onAdd, onSubtract }: MaterialRowProps) {
         <div>
           <h3 className="font-medium text-gray-900">{material.name}</h3>
           <p className="text-sm text-gray-500">{material.description}</p>
-          {material.category && (
+          {/* {material.category && (
             <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded mt-1 inline-block">
               {material.category}
             </span>
-          )}
+          )} */}
         </div>
       </div>
       

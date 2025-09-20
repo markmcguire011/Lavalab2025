@@ -25,7 +25,7 @@ export function InventoryAdder({ currentInventory, neededInventory, unit, onAdd,
             ? "outline-yellow-600" 
             : "text-gray-500"
         }`}>
-        <div className={`text-lg font-normal text-gray-900 border-b ${
+        <div className={`text-lg py-0.5 font-normal text-gray-900 border-b ${
           neededInventory > currentInventory 
             ? "bg-yellow-50 border-b-yellow-600" 
             : "text-gray-500"
