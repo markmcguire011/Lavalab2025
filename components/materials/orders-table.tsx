@@ -80,9 +80,14 @@ export function OrdersTable() {
         throw new Error('User not authenticated');
       }
 
+      // Get default delivery date (14 days from now)
+      const expectedDelivery = new Date();
+      expectedDelivery.setDate(expectedDelivery.getDate() + 14);
+
       // Transform the form data for database insertion
       const dbOrder = transformOrderForDb({
         ...orderData,
+        expectedDeliveryDate: expectedDelivery.toISOString().split('T')[0],
         status: 'ordered' as const,
         userId: user.id
       });

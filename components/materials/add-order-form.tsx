@@ -17,11 +17,6 @@ interface AddOrderFormProps {
 export interface OrderFormData {
   materialId: string;
   quantity: number;
-  unitPrice?: number;
-  totalAmount?: number;
-  supplier?: string;
-  supplierOrderId?: string;
-  expectedDeliveryDate?: string;
   notes?: string;
 }
 
@@ -31,11 +26,6 @@ export function AddOrderForm({ onSubmit, onCancel, isLoading = false }: AddOrder
   const [formData, setFormData] = useState<OrderFormData>({
     materialId: '',
     quantity: 1,
-    unitPrice: undefined,
-    totalAmount: undefined,
-    supplier: '',
-    supplierOrderId: '',
-    expectedDeliveryDate: '',
     notes: ''
   });
   const supabase = createClient();
@@ -44,15 +34,6 @@ export function AddOrderForm({ onSubmit, onCancel, isLoading = false }: AddOrder
     fetchMaterials();
   }, []);
 
-  useEffect(() => {
-    // Auto-calculate total amount when quantity or unit price changes
-    if (formData.quantity && formData.unitPrice) {
-      setFormData(prev => ({
-        ...prev,
-        totalAmount: prev.quantity * (prev.unitPrice || 0)
-      }));
-    }
-  }, [formData.quantity, formData.unitPrice]);
 
   const fetchMaterials = async () => {
     try {
@@ -85,11 +66,6 @@ export function AddOrderForm({ onSubmit, onCancel, isLoading = false }: AddOrder
     const cleanData: OrderFormData = {
       materialId: formData.materialId,
       quantity: formData.quantity,
-      ...(formData.unitPrice && { unitPrice: formData.unitPrice }),
-      ...(formData.totalAmount && { totalAmount: formData.totalAmount }),
-      ...(formData.supplier && { supplier: formData.supplier }),
-      ...(formData.supplierOrderId && { supplierOrderId: formData.supplierOrderId }),
-      ...(formData.expectedDeliveryDate && { expectedDeliveryDate: formData.expectedDeliveryDate }),
       ...(formData.notes && { notes: formData.notes })
     };
 
@@ -104,26 +80,35 @@ export function AddOrderForm({ onSubmit, onCancel, isLoading = false }: AddOrder
   };
 
   const handleMaterialChange = (materialId: string) => {
-    const selectedMaterial = materials.find(m => m.id === materialId);
     setFormData(prev => ({
       ...prev,
-      materialId,
-      supplier: selectedMaterial?.supplier || '',
-      unitPrice: selectedMaterial?.unitCost || undefined
+      materialId
     }));
   };
 
-  // Get default delivery date (7 days from now)
-  const getDefaultDeliveryDate = () => {
+  // Get selected material details
+  const selectedMaterial = materials.find(m => m.id === formData.materialId);
+  
+  // Calculate order total
+  const orderTotal = selectedMaterial?.unitCost 
+    ? (selectedMaterial.unitCost * formData.quantity).toFixed(2)
+    : null;
+
+  // Get estimated delivery date (2 weeks from now)
+  const getEstimatedDeliveryDate = () => {
     const date = new Date();
-    date.setDate(date.getDate() + 7);
-    return date.toISOString().split('T')[0];
+    date.setDate(date.getDate() + 14);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="md:col-span-2">
+      <div className="space-y-4">
+        <div>
           <Label htmlFor="materialId">Material *</Label>
           {loadingMaterials ? (
             <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
@@ -139,7 +124,7 @@ export function AddOrderForm({ onSubmit, onCancel, isLoading = false }: AddOrder
               <option value="">Select a material</option>
               {materials.map(material => (
                 <option key={material.id} value={material.id}>
-                  {material.name} {material.supplier && `(${material.supplier})`}
+                  {material.name}
                 </option>
               ))}
             </select>
@@ -161,68 +146,6 @@ export function AddOrderForm({ onSubmit, onCancel, isLoading = false }: AddOrder
         </div>
 
         <div>
-          <Label htmlFor="unitPrice">Unit Price ($)</Label>
-          <Input
-            id="unitPrice"
-            type="number"
-            min="0"
-            step="0.01"
-            value={formData.unitPrice || ''}
-            onChange={(e) => handleInputChange('unitPrice', parseFloat(e.target.value) || undefined)}
-            placeholder="0.00"
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="totalAmount">Total Amount ($)</Label>
-          <Input
-            id="totalAmount"
-            type="number"
-            min="0"
-            step="0.01"
-            value={formData.totalAmount || ''}
-            onChange={(e) => handleInputChange('totalAmount', parseFloat(e.target.value) || undefined)}
-            placeholder="Auto-calculated"
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="supplier">Supplier</Label>
-          <Input
-            id="supplier"
-            value={formData.supplier}
-            onChange={(e) => handleInputChange('supplier', e.target.value)}
-            placeholder="Supplier name"
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="supplierOrderId">Supplier Order ID</Label>
-          <Input
-            id="supplierOrderId"
-            value={formData.supplierOrderId}
-            onChange={(e) => handleInputChange('supplierOrderId', e.target.value)}
-            placeholder="Supplier's order reference"
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="expectedDeliveryDate">Expected Delivery Date</Label>
-          <Input
-            id="expectedDeliveryDate"
-            type="date"
-            value={formData.expectedDeliveryDate}
-            onChange={(e) => handleInputChange('expectedDeliveryDate', e.target.value)}
-            placeholder={getDefaultDeliveryDate()}
-            disabled={isLoading}
-          />
-        </div>
-
-        <div className="md:col-span-2">
           <Label htmlFor="notes">Notes</Label>
           <Textarea
             id="notes"
@@ -234,6 +157,31 @@ export function AddOrderForm({ onSubmit, onCancel, isLoading = false }: AddOrder
           />
         </div>
       </div>
+
+      {/* Order Summary */}
+      {formData.materialId && (
+        <div className="border-t pt-4">
+          <h4 className="text-sm font-medium text-gray-700 mb-3">Order Summary</h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">Supplier:</span>
+              <span className="text-gray-600">
+                {selectedMaterial?.supplier || 'Not specified'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Order Total:</span>
+              <span className="text-gray-600">
+                {orderTotal ? `$${orderTotal}` : 'Price not available'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Estimated Delivery:</span>
+              <span className="text-gray-600">{getEstimatedDeliveryDate()}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex justify-end gap-3 pt-4">
         <Button
