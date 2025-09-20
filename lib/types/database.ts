@@ -110,6 +110,44 @@ export type Database = {
           updated_at?: string;
         };
       };
+      products: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          description: string | null;
+          category: string | null;
+          price: number | null;
+          image_url: string | null;
+          material_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          description?: string | null;
+          category?: string | null;
+          price?: number | null;
+          image_url?: string | null;
+          material_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          name?: string;
+          description?: string | null;
+          category?: string | null;
+          price?: number | null;
+          image_url?: string | null;
+          material_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -134,3 +172,7 @@ export type MaterialUpdate = Database['public']['Tables']['materials']['Update']
 export type Order = Database['public']['Tables']['orders']['Row'];
 export type OrderInsert = Database['public']['Tables']['orders']['Insert'];
 export type OrderUpdate = Database['public']['Tables']['orders']['Update'];
+
+export type Product = Database['public']['Tables']['products']['Row'];
+export type ProductInsert = Database['public']['Tables']['products']['Insert'];
+export type ProductUpdate = Database['public']['Tables']['products']['Update'];
