@@ -7,6 +7,7 @@ import { LogOut, MoreHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { EditAccountModal } from "@/components/account/edit-account-modal";
 
 interface SidebarItem {
   name: string;
@@ -90,6 +91,7 @@ export function AppSidebar() {
 
 function UserInfo() {
   const [user, setUser] = useState<User | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -118,10 +120,25 @@ function UserInfo() {
     window.location.href = '/';
   };
 
+  const handleEditClick = () => {
+    setShowEditForm(true);
+  };
+
+  const handleFormCancel = () => {
+    setShowEditForm(false);
+  };
+
+  const handleFormSave = async () => {
+    setShowEditForm(false);
+    // Refresh user data
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+  };
+
   if (!user) return null;
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 z-50">
       <button
         onClick={handleSignOut}
         className="w-full flex items-center font-normal text-left text-red-500 hover:text-red-600 hover:bg-gray-50 text-sm px-2 py-3 rounded transition-colors"
@@ -146,12 +163,19 @@ function UserInfo() {
           </p>
         </div>
         <button
+          onClick={handleEditClick}
           className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors"
           title="Edit profile"
         >
           <MoreHorizontal className="h-4 w-4" />
         </button>
       </div>
+      
+      <EditAccountModal
+        isOpen={showEditForm}
+        onClose={handleFormCancel}
+        onSave={handleFormSave}
+      />
     </div>
   );
 }

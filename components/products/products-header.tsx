@@ -33,9 +33,9 @@ export function ProductsHeader({
   onAddNew
 }: ProductsHeaderProps) {
   return (
-    <div className="space-y-4 pt-4">
+    <div className="space-y-4 pt-4 -z-50">
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2 relative">
+        <div className="flex items-center gap-2">
           <ProductsSearch 
             searchTerm={searchTerm}
             onSearchChange={onSearchChange}
